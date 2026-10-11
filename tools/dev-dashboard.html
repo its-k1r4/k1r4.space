@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dev Dashboard — All K1R4 Tools in One Place</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="description" content="A developer productivity dashboard with quick access to all K1R4 tools: JSON formatter, regex tester, password generator, color palette, and more. All in one place, works offline.">
+<link rel="canonical" href="https://k1r4.space/dev-dashboard.html">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e17;--surface:#111827;--surface2:#1a2235;--border:#2a3450;--text:#e2e8f0;--text-dim:#8892a8;--accent:#6366f1;--accent-hover:#818cf8;--green:#22c55e;--orange:#f59e0b;--red:#ef4444;--blue:#3b82f6;--purple:#a855f7;--cyan:#06b6d4;--pink:#ec4899}
+body{font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',monospace;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid var(--border);margin-bottom:24px;flex-wrap:wrap;gap:12px}
+header h1{font-size:1.5rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+header .meta{display:flex;gap:16px;font-size:0.8rem;color:var(--text-dim)}
+header .meta span{display:flex;align-items:center;gap:4px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all 0.2s;cursor:pointer;text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,0.1)}
+.card .icon{font-size:1.8rem;margin-bottom:8px}
+.card h3{font-size:1rem;font-weight:600;margin-bottom:4px}
+.card p{font-size:0.8rem;color:var(--text-dim)}
+.card .tag{display:inline-block;font-size:0.65rem;padding:2px 8px;border-radius:4px;margin-top:8px;font-weight:600}
+.tag-utility{background:rgba(99,102,241,0.15);color:var(--accent)}
+.tag-data{background:rgba(6,182,212,0.15);color:var(--cyan)}
+.tag-productivity{background:rgba(34,197,94,0.15);color:var(--green)}
+.tag-security{background:rgba(239,68,68,0.15);color:var(--red)}
+.tag-creative{background:rgba(168,85,247,0.15);color:var(--purple)}
+.section-title{font-size:1.1rem;font-weight:700;margin:24px 0 16px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:20px;background:var(--accent);border-radius:2px}
+.api-explorer{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.api-explorer h3{font-size:1rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.api-endpoints{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:16px}
+.endpoint{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;display:flex;justify-content:space-between;align-items:center}
+.endpoint:hover{border-color:var(--accent);background:rgba(99,102,241,0.1)}
+.endpoint .method{font-weight:700;padding:2px 6px;border-radius:4px;font-size:0.65rem}
+.method-get{background:rgba(34,197,94,0.15);color:var(--green)}
+.endpoint .path{font-family:inherit;color:var(--text-dim)}
+.api-response{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:16px;font-size:0.75rem;min-height:80px;white-space:pre-wrap;word-break:break-all;font-family:inherit;color:var(--cyan);display:none}
+.api-response.active{display:block}
+.quick-tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px}
+.quick-tool{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.quick-tool h4{font-size:0.9rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.quick-tool input,.quick-tool select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:inherit;font-size:0.8rem;margin-bottom:8px;outline:none}
+.quick-tool input:focus{border-color:var(--accent)}
+.quick-tool button{width:100%;background:var(--accent);color:white;border:none;border-radius:8px;padding:10px;font-family:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;transition:background 0.2s}
+.quick-tool button:hover{background:var(--accent-hover)}
+.quick-tool .result{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.75rem;word-break:break-all;font-family:inherit;min-height:40px;margin-top:8px;color:var(--cyan);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.quick-tool .result .copy-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.7rem;padding:4px 8px;border-radius:4px}
+.quick-tool .result .copy-btn:hover{color:var(--accent);background:rgba(99,102,241,0.1)}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.links a{display:inline-block;font-size:0.7rem;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text-dim);text-decoration:none;transition:all 0.2s}
+.links a:hover{border-color:var(--accent);color:var(--text)}
+footer{text-align:center;padding:24px 0;color:var(--text-dim);font-size:0.75rem;border-top:1px solid var(--border);margin-top:24px}
+@media(max-width:768px){.grid{grid-template-columns:1fr}.quick-tools{grid-template-columns:1fr}.api-endpoints{grid-template-columns:1fr}header{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>&#9670; Dev Dashboard</h1>
+<div class="meta">
+<span><span class="live-dot"></span> Static site &middot; no server</span>
+<span id="clock"></span>
+<span>v1.0</span>
+</div>
+</header>
+
+<div class="section-title">Tools</div>
+<div class="grid">
+<a href="/kanban-board.html" class="card">
+<div class="icon">&#128203;</div>
+<h3>Kanban Board</h3>
+<p>Drag-and-drop task management with LocalStorage</p>
+<span class="tag tag-productivity">Productivity</span>
+</a>
+<a href="/pomodoro-timer.html" class="card">
+<div class="icon">&#9203;</div>
+<h3>Pomodoro Timer</h3>
+<p>Configurable work/break intervals with audio alerts</p>
+<span class="tag tag-productivity">Productivity</span>
+</a>
+<a href="/css-gradient-generator.html" class="card">
+<div class="icon">&#127912;</div>
+<h3>CSS Gradient Generator</h3>
+<p>Visual gradient builder with CSS export</p>
+<span class="tag tag-creative">Creative</span>
+</a>
+<a href="/json-formatter.html" class="card">
+<div class="icon">&#123;&#125;</div>
+<h3>JSON Formatter</h3>
+<p>Validate, format, and minify JSON</p>
+<span class="tag tag-data">Data</span>
+</a>
+<a href="/regex-tester.html" class="card">
+<div class="icon">&#129716;</div>
+<h3>Regex Tester</h3>
+<p>Real-time regex matching with explanation</p>
+<span class="tag tag-utility">Utility</span>
+</a>
+<a href="/markdown-editor.html" class="card">
+<div class="icon">&#9998;</div>
+<h3>Markdown Editor</h3>
+<p>Split-pane editing with live preview</p>
+<span class="tag tag-utility">Utility</span>
+</a>
+<a href="/base64-tool.html" class="card">
+<div class="icon">&#128221;</div>
+<h3>Base64 Tool</h3>
+<p>Encode/decode text and files</p>
+<span class="tag tag-data">Data</span>
+</a>
+<a href="/qr-code-generator.html" class="card">
+<div class="icon">&#9740;</div>
+<h3>QR Code Generator</h3>
+<p>Generate QR codes from any text or URL</p>
+<span class="tag tag-utility">Utility</span>
+</a>
+<a href="/taskflow.html" class="card">
+<div class="icon">&#128200;</div>
+<h3>TaskFlow</h3>
+<p>Workflow visualization with dependency tracking</p>
+<span class="tag tag-productivity">Productivity</span>
+</a>
+<a href="/password-generator.html" class="card">
+<div class="icon">&#128274;</div>
+<h3>Password Generator</h3>
+<p>Configurable generation with entropy display</p>
+<span class="tag tag-security">Security</span>
+</a>
+<a href="/csv-converter.html" class="card">
+<div class="icon">&#128196;</div>
+<h3>CSV to JSON</h3>
+<p>Transform CSV data to JSON format</p>
+<span class="tag tag-data">Data</span>
+</a>
+<a href="/note-taker.html" class="card">
+<div class="icon">&#128221;</div>
+<h3>Note-Taker</h3>
+<p>Full markdown note app with search and export</p>
+<span class="tag tag-productivity">Productivity</span>
+</a>
+</div>
+
+<div class="section-title">Quick Tools</div>
+<p style="font-size:0.75rem;color:var(--text-dim);margin-bottom:12px">Every utility below computes in your browser with the Web Crypto API. Nothing is sent to a server, and the page keeps working offline.</p>
+<div class="quick-tools">
+<div class="quick-tool">
+<h4>&#127912; Color Palette Generator</h4>
+<input type="text" id="colorInput" placeholder="Enter hex color (e.g., 6366f1)" maxlength="6">
+<button onclick="genPalette()">Generate Palette</button>
+<div class="result" id="paletteResult" style="display:none">
+<span id="paletteOutput"></span>
+<button class="copy-btn" onclick="copyToClipboard('paletteOutput')">&#128203; Copy</button>
+</div>
+</div>
+<div class="quick-tool">
+<h4>&#128274; Quick Password</h4>
+<input type="number" id="pwdLength" placeholder="Length (16)" value="16" min="4" max="128">
+<button onclick="genPassword()">Generate Password</button>
+<div class="result" id="pwdResult" style="display:none">
+<span id="pwdOutput"></span>
+<button class="copy-btn" onclick="copyToClipboard('pwdOutput')">&#128203; Copy</button>
+</div>
+</div>
+<div class="quick-tool">
+<h4>&#128300; Roll Dice</h4>
+<input type="number" id="diceCount" placeholder="Count (3)" value="3" min="1" max="20">
+<button onclick="rollDice()">Roll Dice</button>
+<div class="result" id="diceResult" style="display:none">
+<span id="diceOutput"></span>
+<button class="copy-btn" onclick="copyToClipboard('diceOutput')">&#128203; Copy</button>
+</div>
+</div>
+<div class="quick-tool">
+<h4>&#128308; SHA-256 Hash</h4>
+<input type="text" id="hashInput" placeholder="Enter text to hash">
+<button onclick="genHash()">Hash</button>
+<div class="result" id="hashResult" style="display:none">
+<span id="hashOutput" style="font-size:0.65rem"></span>
+<button class="copy-btn" onclick="copyToClipboard('hashOutput')">&#128203; Copy</button>
+</div>
+</div>
+</div>
+
+<div class="section-title">Tutorials</div>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(250px,1fr))">
+<a href="/tutorials/kanban-board-tutorial.html" class="card">
+<div class="icon">&#128214;</div>
+<h3>Kanban Board Tutorial</h3>
+<p>8-minute comprehensive guide with code examples</p>
+<span class="tag tag-utility">8 min read</span>
+</a>
+<a href="/tutorials/css-gradient-generator-tutorial.html" class="card">
+<div class="icon">&#128214;</div>
+<h3>CSS Gradient Tutorial</h3>
+<p>Build gradient generators from scratch</p>
+<span class="tag tag-creative">5 min read</span>
+</a>
+<a href="/tutorials/json-formatter-tutorial.html" class="card">
+<div class="icon">&#128214;</div>
+<h3>JSON Formatter Tutorial</h3>
+<p>Parse, validate, and format JSON in JS</p>
+<span class="tag tag-data">6 min read</span>
+</a>
+</div>
+
+<div class="section-title">Links</div>
+<div class="links">
+<a href="https://k1r4.space">Home</a>
+<a href="https://github.com/its-k1r4/k1r4-tools">GitHub</a>
+<a href="https://ghorx.gumroad.com">Gumroad Store</a>
+<a href="https://dev.to/mou1z">DEV.to</a>
+</div>
+
+<footer>
+<p>Built by an autonomous AI agent. All tools are free, open source, and work offline.</p>
+<p style="margin-top:4px">k1r4.space &middot; No tracking &middot; No ads &middot; No signup</p>
+</footer>
+</div>
+
+<script>
+// Clock
+function updateClock(){
+const d=new Date();
+document.getElementById('clock').textContent=d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});
+}
+updateClock();setInterval(updateClock,1000);
+
+// Helpers
+function hexToRgb(hex){return [0,2,4].map(i=>parseInt(hex.substr(i,2),16));}
+function rgbToHsl(r,g,b){
+r/=255;g/=255;b/=255;
+const max=Math.max(r,g,b),min=Math.min(r,g,b),l=(max+min)/2;
+let h=0,s=0;
+if(max!==min){const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);
+h=max===r?((g-b)/d+(g<b?6:0)):max===g?((b-r)/d+2):((r-g)/d+4);h/=6;}
+return [h*360,s*100,l*100];
+}
+function hue2rgb(p,q,t){if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;}
+function hslToHex(h,s,l){
+h=(((h%360)+360)%360)/360;s/=100;l/=100;
+const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;
+const to=t=>Math.round(hue2rgb(p,q,t)*255).toString(16).padStart(2,'0');
+return '#'+to(h+1/3)+to(h)+to(h-1/3);
+}
+// uniform integer in [0,n) from crypto.getRandomValues — no modulo bias: values
+// at or above limit (the largest multiple of n that fits in 2^32) are rejected
+function randInt(n){
+const limit=Math.floor(4294967296/n)*n,buf=new Uint32Array(1);
+for(;;){crypto.getRandomValues(buf);if(buf[0]<limit)return buf[0]%n;}
+}
+function cryptoOk(what){return !!(window.crypto&&crypto[what]);}
+
+// Quick Tools — all four compute locally, in this tab
+function genPalette(){
+const hex=document.getElementById('colorInput').value.trim().replace(/^#/,'');
+const out=document.getElementById('paletteOutput'),box=document.getElementById('paletteResult');
+if(!/^[\da-fA-F]{6}$/.test(hex)){out.textContent='Enter a valid 6-digit hex color, e.g. 6366f1';box.style.display='flex';return;}
+const rgb=hexToRgb(hex),[h,s,l]=rgbToHsl(rgb[0],rgb[1],rgb[2]);
+out.textContent=[38,20,0,-16,-32].map(d=>hslToHex(h,s,Math.max(6,Math.min(96,l+d)))).join('  ');
+box.style.display='flex';
+}
+function genPassword(){
+const len=Math.min(Math.max(parseInt(document.getElementById('pwdLength').value,10)||16,4),128);
+const out=document.getElementById('pwdOutput'),box=document.getElementById('pwdResult');
+if(!cryptoOk('getRandomValues')){out.textContent='This browser has no crypto.getRandomValues';box.style.display='flex';return;}
+const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}<>?,.;:';
+let s='';
+for(let i=0;i<len;i++)s+=chars[randInt(chars.length)];
+out.textContent=s;box.style.display='flex';
+}
+function rollDice(){
+const count=Math.min(Math.max(parseInt(document.getElementById('diceCount').value,10)||3,1),20);
+const out=document.getElementById('diceOutput'),box=document.getElementById('diceResult');
+if(!cryptoOk('getRandomValues')){out.textContent='This browser has no crypto.getRandomValues';box.style.display='flex';return;}
+const rolls=[];let total=0;
+for(let i=0;i<count;i++){const v=randInt(6)+1;rolls.push(v);total+=v;}
+out.textContent='['+rolls.join(', ')+'] total: '+total;box.style.display='flex';
+}
+function genHash(){
+const text=document.getElementById('hashInput').value;
+const out=document.getElementById('hashOutput'),box=document.getElementById('hashResult');
+if(!text){out.textContent='Enter some text to hash';box.style.display='flex';return;}
+if(!cryptoOk('subtle')){out.textContent='Web Crypto needs a secure (https) connection';box.style.display='flex';return;}
+crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)).then(d=>{
+out.textContent=Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('');
+box.style.display='flex';
+}).catch(e=>{out.textContent='Error: '+e.message;box.style.display='flex';});
+}
+function copyToClipboard(id){
+const el=document.getElementById(id);
+const btn=el.parentElement.querySelector('.copy-btn');
+const done=ok=>{btn.textContent=ok?'Copied!':'Copy failed';setTimeout(()=>btn.textContent='\u{1F4CB} Copy',1500);};
+if(!navigator.clipboard){done(false);return;}
+navigator.clipboard.writeText(el.textContent).then(()=>done(true),()=>done(false));
+}
+</script>
+</body>
+</html>

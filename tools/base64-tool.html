@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder/Decoder — k1r4.space</title>
+    <meta name="description" content="Free online Base64 encoder and decoder. Encode text to Base64 or decode Base64 back to text. No signup, no tracking, runs entirely in your browser.">
+    <meta name="keywords" content="base64 encoder, base64 decoder, base64 encode, base64 decode, online tool">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --surface: #1a1a2e;
+            --border: #2a2a4a;
+            --text: #e0e0ff;
+            --text-dim: #8888aa;
+            --accent: #6c63ff;
+            --accent-hover: #5a52e0;
+            --success: #4ade80;
+            --error: #f87171;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        header h1 span { color: var(--accent); }
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--text-dim);
+        }
+        nav { display: flex; gap: 0.5rem; }
+        nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        nav a:hover { color: var(--text); background: var(--surface); }
+        main {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+            background: var(--surface);
+            border-radius: 10px;
+            padding: 0.25rem;
+            width: fit-content;
+        }
+        .tab {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--text); }
+        .tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        .panels { display: flex; gap: 1rem; flex-direction: column; }
+        .panel {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .panel.active { display: flex; }
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            padding: 1rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus { border-color: var(--accent); }
+        textarea::placeholder { color: var(--text-dim); }
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 0.65rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--accent); }
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+        }
+        .stat { display: flex; align-items: center; gap: 0.3rem; }
+        .stat-value { color: var(--text); font-weight: 600; }
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: var(--success); color: #000; }
+        .toast.error { background: var(--error); color: #000; }
+        .file-drop {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .file-drop:hover, .file-drop.dragover {
+            border-color: var(--accent);
+            background: rgba(108, 99, 255, 0.05);
+        }
+        .file-drop input { display: none; }
+        footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+        @media (max-width: 600px) {
+            main { padding: 1rem; }
+            header { padding: 1rem; }
+            .actions { flex-direction: column; }
+            button { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span>⚡</span> k1r4.space — Base64 Tool</h1>
+        <nav>
+            <a href="/kanban-board.html">Kanban</a>
+            <a href="/pomodoro-timer.html">Pomodoro</a>
+            <a href="/json-formatter.html">JSON</a>
+            <a href="/regex-tester.html">Regex</a>
+            <a href="/css-gradient-generator.html">Gradients</a>
+            <a href="/markdown-editor.html">Markdown</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('encode')">⬆ Encode</button>
+            <button class="tab" onclick="switchTab('decode')">⬇ Decode</button>
+        </div>
+
+        <div class="panels">
+            <!-- Encode Panel -->
+            <div class="panel active" id="encode-panel">
+                <textarea id="encode-input" placeholder="Paste or type text to encode to Base64..."></textarea>
+                <div class="actions">
+                    <button class="btn-primary" onclick="encode()">Encode →</button>
+                    <button class="btn-secondary" onclick="clearEncode()">Clear</button>
+                    <button class="btn-secondary" onclick="copyResult('encode-output')">📋 Copy</button>
+                </div>
+                <div class="stats">
+                    <div class="stat">Input: <span class="stat-value" id="encode-input-size">0</span> chars</div>
+                    <div class="stat">Output: <span class="stat-value" id="encode-output-size">0</span> chars</div>
+                    <div class="stat">Ratio: <span class="stat-value" id="encode-ratio">—</span></div>
+                </div>
+                <textarea id="encode-output" readonly placeholder="Base64 output..."></textarea>
+            </div>
+
+            <!-- Decode Panel -->
+            <div class="panel" id="decode-panel">
+                <textarea id="decode-input" placeholder="Paste Base64 string to decode..."></textarea>
+                <div class="actions">
+                    <button class="btn-primary" onclick="decode()">Decode →</button>
+                    <button class="btn-secondary" onclick="clearDecode()">Clear</button>
+                    <button class="btn-secondary" onclick="copyResult('decode-output')">📋 Copy</button>
+                </div>
+                <div class="stats">
+                    <div class="stat">Input: <span class="stat-value" id="decode-input-size">0</span> chars</div>
+                    <div class="stat">Output: <span class="stat-value" id="decode-output-size">0</span> chars</div>
+                </div>
+                <textarea id="decode-output" readonly placeholder="Decoded output..."></textarea>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        k1r4.space — Free tools, no tracking, no signup. Built by an AI agent.
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            if (tab === 'encode') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('encode-panel').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('decode-panel').classList.add('active');
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        function copyResult(id) {
+            const el = document.getElementById(id);
+            if (!el.value) return showToast('Nothing to copy', 'error');
+            navigator.clipboard.writeText(el.value).then(() => {
+                showToast('Copied to clipboard!');
+            }).catch(() => {
+                el.select();
+                document.execCommand('copy');
+                showToast('Copied to clipboard!');
+            });
+        }
+
+        function clearEncode() {
+            document.getElementById('encode-input').value = '';
+            document.getElementById('encode-output').value = '';
+            updateEncodeStats();
+        }
+
+        function clearDecode() {
+            document.getElementById('decode-input').value = '';
+            document.getElementById('decode-output').value = '';
+            updateDecodeStats();
+        }
+
+        function updateEncodeStats() {
+            const input = document.getElementById('encode-input').value;
+            const output = document.getElementById('encode-output').value;
+            document.getElementById('encode-input-size').textContent = input.length.toLocaleString();
+            document.getElementById('encode-output-size').textContent = output.length.toLocaleString();
+            if (input.length > 0) {
+                const ratio = output.length > 0 ? (output.length / input.length).toFixed(2) : '—';
+                document.getElementById('encode-ratio').textContent = ratio + '×';
+            } else {
+                document.getElementById('encode-ratio').textContent = '—';
+            }
+        }
+
+        function updateDecodeStats() {
+            const input = document.getElementById('decode-input').value;
+            const output = document.getElementById('decode-output').value;
+            document.getElementById('decode-input-size').textContent = input.length.toLocaleString();
+            document.getElementById('decode-output-size').textContent = output.length.toLocaleString();
+        }
+
+        function encode() {
+            const input = document.getElementById('encode-input').value;
+            if (!input) return showToast('Enter text to encode', 'error');
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(input)));
+                document.getElementById('encode-output').value = encoded;
+                updateEncodeStats();
+                showToast('Encoded successfully!');
+            } catch (e) {
+                showToast('Encoding failed: ' + e.message, 'error');
+            }
+        }
+
+        function decode() {
+            const input = document.getElementById('decode-input').value.trim();
+            if (!input) return showToast('Enter Base64 to decode', 'error');
+            try {
+                const decoded = decodeURIComponent(escape(atob(input)));
+                document.getElementById('decode-output').value = decoded;
+                updateDecodeStats();
+                showToast('Decoded successfully!');
+            } catch (e) {
+                showToast('Invalid Base64 string', 'error');
+            }
+        }
+
+        // Live stats
+        document.getElementById('encode-input').addEventListener('input', updateEncodeStats);
+        document.getElementById('decode-input').addEventListener('input', updateDecodeStats);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                if (document.getElementById('encode-panel').classList.contains('active')) {
+                    encode();
+                } else {
+                    decode();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

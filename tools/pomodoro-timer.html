@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer - Focus Tracker</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; }
+        h1 { font-size: 28px; margin-bottom: 6px; color: #e94560; }
+        .subtitle { color: #888; margin-bottom: 30px; font-size: 14px; }
+        .timer-container { background: #16213e; border-radius: 20px; padding: 40px; width: 100%; max-width: 500px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .mode-selector { display: flex; gap: 8px; justify-content: center; margin-bottom: 30px; }
+        .mode-btn { padding: 10px 20px; border: 2px solid #0f3460; background: transparent; color: #888; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; }
+        .mode-btn.active { background: #e94560; border-color: #e94560; color: white; }
+        .mode-btn:hover:not(.active) { border-color: #e94560; color: #e94560; }
+        .timer-display { margin: 30px 0; }
+        .time { font-size: 96px; font-weight: 700; font-variant-numeric: tabular-nums; color: white; line-height: 1; }
+        .time-label { font-size: 14px; color: #888; margin-top: 8px; text-transform: uppercase; letter-spacing: 2px; }
+        .progress-ring { margin: 20px auto; }
+        .progress-ring circle { transition: stroke-dashoffset 0.5s; }
+        .controls { display: flex; gap: 12px; justify-content: center; margin-top: 30px; }
+        .ctrl-btn { padding: 14px 32px; border: none; border-radius: 30px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.2s; }
+        .ctrl-btn-start { background: #e94560; color: white; }
+        .ctrl-btn-start:hover { background: #c73652; transform: scale(1.05); }
+        .ctrl-btn-pause { background: #f5a623; color: white; }
+        .ctrl-btn-pause:hover { background: #d4911e; transform: scale(1.05); }
+        .ctrl-btn-reset { background: #0f3460; color: #888; }
+        .ctrl-btn-reset:hover { background: #1a4a7a; color: white; }
+        .settings { margin-top: 30px; padding-top: 20px; border-top: 1px solid #0f3460; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+        .setting-label { font-size: 14px; color: #aaa; }
+        .setting-input { width: 80px; padding: 8px 12px; background: #0f3460; border: 1px solid #1a4a7a; border-radius: 6px; color: white; text-align: center; font-size: 14px; }
+        .setting-input:focus { outline: none; border-color: #e94560; }
+        .stats-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; max-width: 500px; margin-top: 30px; }
+        .stat-card { background: #16213e; border-radius: 12px; padding: 20px; text-align: center; }
+        .stat-value { font-size: 32px; font-weight: 700; color: #e94560; }
+        .stat-label { font-size: 12px; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .session-list { width: 100%; max-width: 500px; margin-top: 20px; }
+        .session-list h3 { font-size: 16px; color: #aaa; margin-bottom: 12px; }
+        .session-item { display: flex; justify-content: space-between; align-items: center; background: #16213e; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; }
+        .session-time { font-size: 14px; color: #888; }
+        .session-duration { font-size: 14px; color: #e94560; font-weight: 600; }
+        .session-type { font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500; }
+        .session-type.work { background: #e94560; color: white; }
+        .session-type.break { background: #27ae60; color: white; }
+        .task-input-area { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; max-width: 500px; }
+        .task-input { flex: 1; padding: 12px 16px; background: #16213e; border: 2px solid #0f3460; border-radius: 10px; color: white; font-size: 14px; }
+        .task-input:focus { outline: none; border-color: #e94560; }
+        .task-input::placeholder { color: #555; }
+        .today-task { font-size: 16px; color: #e94560; font-weight: 500; margin-bottom: 20px; text-align: center; padding: 10px; background: rgba(233,69,96,0.1); border-radius: 8px; width: 100%; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <h1>🍅 Pomodoro Timer</h1>
+    <p class="subtitle">Stay focused, track your sessions</p>
+
+    <div class="task-input-area">
+        <input type="text" class="task-input" id="taskInput" placeholder="What are you working on?" oninput="saveTask()">
+    </div>
+    <div class="today-task" id="todayTask"></div>
+
+    <div class="timer-container">
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('work')">Focus</button>
+            <button class="mode-btn" onclick="setMode('short')">Short Break</button>
+            <button class="mode-btn" onclick="setMode('long')">Long Break</button>
+        </div>
+
+        <div class="timer-display">
+            <svg class="progress-ring" width="280" height="280">
+                <circle cx="140" cy="140" r="130" stroke="#0f3460" stroke-width="8" fill="none"/>
+                <circle id="progressCircle" cx="140" cy="140" r="130" stroke="#e94560" stroke-width="8" fill="none"
+                        stroke-dasharray="816.81" stroke-dashoffset="0" stroke-linecap="round"
+                        transform="rotate(-90 140 140)"/>
+            </svg>
+            <div class="time" id="timeDisplay">25:00</div>
+            <div class="time-label" id="timeLabel">Focus Time</div>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn ctrl-btn-start" id="startBtn" onclick="toggleTimer()">Start</button>
+            <button class="ctrl-btn ctrl-btn-reset" onclick="resetTimer()">Reset</button>
+        </div>
+
+        <div class="settings">
+            <div class="setting-row">
+                <span class="setting-label">Focus (min)</span>
+                <input type="number" class="setting-input" id="workDuration" value="25" min="1" max="120" onchange="updateSettings()">
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Short Break (min)</span>
+                <input type="number" class="setting-input" id="shortBreak" value="5" min="1" max="30" onchange="updateSettings()">
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Long Break (min)</span>
+                <input type="number" class="setting-input" id="longBreak" value="15" min="1" max="60" onchange="updateSettings()">
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Sessions before long break</span>
+                <input type="number" class="setting-input" id="sessionsBeforeLong" value="4" min="1" max="10" onchange="updateSettings()">
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-value" id="todayPomodoros">0</div>
+            <div class="stat-label">Today's Sessions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="todayMinutes">0</div>
+            <div class="stat-label">Focus Minutes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalPomodoros">0</div>
+            <div class="stat-label">All-Time Sessions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalMinutes">0</div>
+            <div class="stat-label">All-Time Minutes</div>
+        </div>
+    </div>
+
+    <div class="session-list">
+        <h3>Today's Sessions</h3>
+        <div id="sessionList"></div>
+    </div>
+
+    <script>
+        // State
+        let timer = null;
+        let timeLeft = 25 * 60;
+        let totalTime = 25 * 60;
+        let isRunning = false;
+        let currentMode = 'work';
+        let completedSessions = 0;
+        let settings = { work: 25, short: 5, long: 15, sessionsBeforeLong: 4 };
+
+        // Data
+        let sessions = [];
+        let stats = { today: { count: 0, minutes: 0, date: '' }, total: { count: 0, minutes: 0 } };
+
+        const CIRCUMFERENCE = 2 * Math.PI * 130;
+
+        function init() {
+            loadData();
+            checkNewDay();
+            renderStats();
+            renderSessions();
+            updateDisplay();
+            updateSettings();
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('pomodoroData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                sessions = data.sessions || [];
+                stats = data.stats || { today: { count: 0, minutes: 0, date: '' }, total: { count: 0, minutes: 0 } };
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('pomodoroData', JSON.stringify({ sessions, stats }));
+        }
+
+        function checkNewDay() {
+            const today = new Date().toDateString();
+            if (stats.today.date !== today) {
+                stats.today = { count: 0, minutes: 0, date: today };
+                saveData();
+            }
+        }
+
+        function setMode(mode) {
+            if (isRunning) return;
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (mode === 'work') {
+                timeLeft = settings.work * 60;
+                totalTime = settings.work * 60;
+                document.getElementById('timeLabel').textContent = 'Focus Time';
+            } else if (mode === 'short') {
+                timeLeft = settings.short * 60;
+                totalTime = settings.short * 60;
+                document.getElementById('timeLabel').textContent = 'Short Break';
+            } else {
+                timeLeft = settings.long * 60;
+                totalTime = settings.long * 60;
+                document.getElementById('timeLabel').textContent = 'Long Break';
+            }
+            updateDisplay();
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            isRunning = true;
+            const btn = document.getElementById('startBtn');
+            btn.textContent = 'Pause';
+            btn.className = 'ctrl-btn ctrl-btn-pause';
+
+            timer = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    timerComplete();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timer);
+            const btn = document.getElementById('startBtn');
+            btn.textContent = 'Start';
+            btn.className = 'ctrl-btn ctrl-btn-start';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            if (currentMode === 'work') {
+                timeLeft = settings.work * 60;
+            } else if (currentMode === 'short') {
+                timeLeft = settings.short * 60;
+            } else {
+                timeLeft = settings.long * 60;
+            }
+            totalTime = timeLeft;
+            updateDisplay();
+        }
+
+        function timerComplete() {
+            const btn = document.getElementById('startBtn');
+            btn.textContent = 'Start';
+            btn.className = 'ctrl-btn ctrl-btn-start';
+
+            if (currentMode === 'work') {
+                completedSessions++;
+                const duration = settings.work;
+
+                // Update stats
+                stats.today.count++;
+                stats.today.minutes += duration;
+                stats.total.count++;
+                stats.total.minutes += duration;
+
+                // Record session
+                sessions.unshift({
+                    type: 'work',
+                    duration,
+                    time: new Date().toISOString(),
+                    sessionNum: completedSessions
+                });
+
+                // Keep only last 20 sessions in memory
+                if (sessions.length > 20) sessions = sessions.slice(0, 20);
+
+                saveData();
+                renderStats();
+                renderSessions();
+
+                // Play notification sound (if available)
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = 800;
+                    gain.gain.value = 0.3;
+                    osc.start();
+                    setTimeout(() => { osc.stop(); ctx.close(); }, 500);
+                } catch(e) {}
+
+                // Auto-switch to break
+                if (completedSessions % settings.sessionsBeforeLong === 0) {
+                    setModeAutomatic('long');
+                } else {
+                    setModeAutomatic('short');
+                }
+            } else {
+                // Break complete, switch to work
+                setModeAutomatic('work');
+            }
+        }
+
+        function setModeAutomatic(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            const btns = document.querySelectorAll('.mode-btn');
+            if (mode === 'work') btns[0].classList.add('active');
+            else if (mode === 'short') btns[1].classList.add('active');
+            else btns[2].classList.add('active');
+
+            if (mode === 'work') {
+                timeLeft = settings.work * 60;
+                totalTime = settings.work * 60;
+                document.getElementById('timeLabel').textContent = 'Focus Time';
+            } else if (mode === 'short') {
+                timeLeft = settings.short * 60;
+                totalTime = settings.short * 60;
+                document.getElementById('timeLabel').textContent = 'Short Break';
+            } else {
+                timeLeft = settings.long * 60;
+                totalTime = settings.long * 60;
+                document.getElementById('timeLabel').textContent = 'Long Break';
+            }
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timeDisplay').textContent =
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // Update progress ring
+            const progress = 1 - (timeLeft / totalTime);
+            const offset = CIRCUMFERENCE * (1 - progress);
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+
+            // Update page title
+            document.title = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} - Pomodoro`;
+        }
+
+        function updateSettings() {
+            settings.work = parseInt(document.getElementById('workDuration').value) || 25;
+            settings.short = parseInt(document.getElementById('shortBreak').value) || 5;
+            settings.long = parseInt(document.getElementById('longBreak').value) || 15;
+            settings.sessionsBeforeLong = parseInt(document.getElementById('sessionsBeforeLong').value) || 4;
+
+            if (!isRunning) {
+                if (currentMode === 'work') { timeLeft = settings.work * 60; totalTime = settings.work * 60; }
+                else if (currentMode === 'short') { timeLeft = settings.short * 60; totalTime = settings.short * 60; }
+                else { timeLeft = settings.long * 60; totalTime = settings.long * 60; }
+                updateDisplay();
+            }
+        }
+
+        function renderStats() {
+            document.getElementById('todayPomodoros').textContent = stats.today.count;
+            document.getElementById('todayMinutes').textContent = stats.today.minutes;
+            document.getElementById('totalPomodoros').textContent = stats.total.count;
+            document.getElementById('totalMinutes').textContent = stats.total.minutes;
+        }
+
+        function renderSessions() {
+            const list = document.getElementById('sessionList');
+            if (sessions.length === 0) {
+                list.innerHTML = '<p style="color:#555; text-align:center; padding:20px;">No sessions yet. Start your first Pomodoro!</p>';
+                return;
+            }
+            list.innerHTML = sessions.map(s => `
+                <div class="session-item">
+                    <span class="session-time">${new Date(s.time).toLocaleTimeString()}</span>
+                    <span class="session-type ${s.type}">${s.type === 'work' ? 'Focus' : 'Break'}</span>
+                    <span class="session-duration">${s.duration} min</span>
+                </div>
+            `).join('');
+        }
+
+        function saveTask() {
+            const task = document.getElementById('taskInput').value;
+            localStorage.setItem('pomodoroTask', task);
+            document.getElementById('todayTask').textContent = task ? `📌 Working on: ${task}` : '';
+        }
+
+        function loadTask() {
+            const task = localStorage.getItem('pomodoroTask') || '';
+            document.getElementById('taskInput').value = task;
+            document.getElementById('todayTask').textContent = task ? `📌 Working on: ${task}` : '';
+        }
+
+        loadTask();
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator — Free Online | K1R4</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="description" content="Generate QR codes instantly for free. Supports URLs, text, WiFi, email, and more. No signup required.">
+    <link rel="canonical" href="https://k1r4.space/qr-code-generator.html">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #334155;
+            margin-bottom: 1.5rem;
+        }
+        .type-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .type-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #475569;
+            background: transparent;
+            color: #94a3b8;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .type-btn:hover { border-color: #6366f1; color: #e2e8f0; }
+        .type-btn.active {
+            background: #6366f1;
+            border-color: #6366f1;
+            color: white;
+        }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        .input-group textarea { resize: vertical; min-height: 80px; }
+        .options-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .color-input input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: transparent;
+        }
+        .color-input span {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 0.5rem;
+        }
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+        .generate-btn:active { transform: translateY(0); }
+        #qr-output {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        #qr-output canvas {
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            max-width: 100%;
+        }
+        .download-btns {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .dl-btn {
+            padding: 0.6rem 1.5rem;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .dl-btn:hover { background: #475569; }
+        .hidden { display: none; }
+        .error {
+            color: #ef4444;
+            text-align: center;
+            padding: 1rem;
+            display: none;
+        }
+        footer {
+            text-align: center;
+            color: #475569;
+            font-size: 0.8rem;
+            margin-top: 2rem;
+        }
+        footer a { color: #6366f1; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <p class="subtitle">Generate QR codes instantly — URLs, text, WiFi, and more</p>
+        
+        <div class="card">
+            <div class="type-selector">
+                <button class="type-btn active" data-type="url">🔗 URL</button>
+                <button class="type-btn" data-type="text">📝 Text</button>
+                <button class="type-btn" data-type="wifi">📶 WiFi</button>
+                <button class="type-btn" data-type="email">📧 Email</button>
+            </div>
+
+            <div id="form-content">
+                <!-- URL Form -->
+                <div id="form-url" class="form-type">
+                    <div class="input-group">
+                        <label>Website URL</label>
+                        <input type="url" id="qr-url" placeholder="https://example.com" value="https://k1r4.space">
+                    </div>
+                </div>
+
+                <!-- Text Form -->
+                <div id="form-text" class="form-type hidden">
+                    <div class="input-group">
+                        <label>Text Content</label>
+                        <textarea id="qr-text" placeholder="Enter any text..."></textarea>
+                    </div>
+                </div>
+
+                <!-- WiFi Form -->
+                <div id="form-wifi" class="form-type hidden">
+                    <div class="input-group">
+                        <label>Network Name (SSID)</label>
+                        <input type="text" id="wifi-ssid" placeholder="MyWiFiNetwork">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="text" id="wifi-pass" placeholder="WiFi Password">
+                    </div>
+                    <div class="input-group">
+                        <label>Security</label>
+                        <select id="wifi-security">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Email Form -->
+                <div id="form-email" class="form-type hidden">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email-addr" placeholder="hello@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Subject</label>
+                        <input type="text" id="email-subject" placeholder="Email subject">
+                    </div>
+                    <div class="input-group">
+                        <label>Body</label>
+                        <textarea id="email-body" placeholder="Email body text"></textarea>
+                    </div>
+                </div>
+
+                <div class="options-row">
+                    <div class="input-group">
+                        <label>Size</label>
+                        <select id="qr-size">
+                            <option value="200">200 × 200</option>
+                            <option value="300" selected>300 × 300</option>
+                            <option value="400">400 × 400</option>
+                            <option value="512">512 × 512</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Colors</label>
+                        <div class="color-input">
+                            <input type="color" id="qr-fg" value="#000000">
+                            <span>FG</span>
+                            <input type="color" id="qr-bg" value="#ffffff">
+                            <span>BG</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="generate-btn" onclick="generateQR()">Generate QR Code</button>
+            </div>
+
+            <div class="error" id="error-msg"></div>
+
+            <div id="qr-output">
+                <canvas id="qr-canvas"></canvas>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem;" id="qr-data-preview"></p>
+                <div class="download-btns">
+                    <a class="dl-btn" id="dl-png" download="qrcode.png">📥 PNG</a>
+                    <a class="dl-btn" id="dl-svg" download="qrcode.svg">📥 SVG</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Free tool by <a href="https://k1r4.space">K1R4</a> — AI-powered developer tools
+        </footer>
+    </div>
+
+    <script>
+    // QR Code generation library (qrcode.js inline)
+    // Based on the QR code algorithm
+    const QRCodeLib = (() => {
+        // QR Code generator - simplified implementation
+        const ECC_CODEWORDS_PER_BLOCK = {
+            L: [7,10,15,20,26,18,20,24,30,18,20,24,26,30,22,24,28,30,28,28,28,28,30,30,26,28,30,30,30,30,30,30,30,30,30,30,30,30,30,30],
+            M: [10,16,26,18,24,16,18,22,22,26,30,22,22,24,24,28,28,26,26,26,26,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28],
+            Q: [13,22,18,26,18,24,18,22,20,24,28,26,24,20,30,24,28,28,26,30,28,30,30,30,30,28,30,30,30,30,30,30,30,30,30,30,30,30,30,30],
+            H: [17,28,22,16,22,28,26,26,24,28,24,28,22,24,24,30,28,28,26,28,30,24,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30]
+        };
+        const NUM_EC_BLOCKS = {
+            L: [1,1,1,1,1,2,2,2,2,4,4,4,4,4,6,6,6,6,7,8,8,9,9,10,12,12,12,13,14,15,16,17,18,19,19,20,21,22,24,25],
+            M: [1,1,1,2,2,4,4,4,5,5,5,8,9,9,10,10,11,13,14,16,17,17,18,20,21,23,25,26,28,29,31,33,35,37,38,40,43,45,47,49],
+            Q: [1,1,2,2,4,4,6,6,8,8,8,10,12,16,12,17,16,18,21,20,23,23,25,27,29,34,34,35,38,40,43,45,48,51,53,56,59,62,65,68],
+            H: [1,1,2,4,4,4,5,6,8,8,11,11,16,16,18,16,19,21,25,25,25,34,30,32,35,37,40,42,45,48,51,54,57,60,63,66,70,74,77,81]
+        };
+        const DATA_CAPACITY_BYTES = {
+            L: [[19,16,13,9],[34,28,22,16],[55,44,34,26],[80,64,48,36],[108,86,62,46],[136,108,76,60],[156,124,88,66],[194,154,110,86],[232,182,132,100],[274,216,154,122],[324,254,180,140],[370,290,206,158],[428,334,244,180],[461,365,261,197],[523,397,295,223],[589,445,325,253],[647,485,367,283],[721,541,397,313],[795,591,445,341],[861,645,485,385],[932,699,536,406],[1006,753,576,442],[1094,811,614,464],[1174,871,664,514],[1276,955,718,538],[1370,1027,754,596],[1468,1087,808,628],[1531,1151,871,661],[1631,1213,911,701],[1735,1291,961,745],[1843,1373,1015,791],[1955,1455,1075,845],[2071,1541,1155,901],[2191,1631,1215,961],[2306,1721,1285,985],[2434,1807,1351,1045],[2566,1901,1423,1111],[2702,1999,1501,1171],[2812,2093,1581,1231],[2956,2159,1617,1285]],
+            M: [[16,12,10,8],[30,22,16,12],[50,36,28,22],[74,56,42,34],[100,76,58,42],[124,98,70,56],[146,112,80,64],[172,130,96,78],[220,156,112,96],[260,194,130,112],[300,220,150,120],[350,260,176,140],[380,290,210,158],[432,334,230,182],[480,368,270,208],[528,396,290,230],[592,442,332,262],[656,488,364,296],[728,530,394,322],[796,588,442,358],[872,640,480,388],[952,704,524,422],[1032,760,564,464],[1110,828,628,494],[1212,900,668,538],[1298,966,714,596],[1390,1040,760,628],[1492,1094,814,668],[1594,1174,868,714],[1704,1254,928,758],[1814,1334,988,808],[1928,1440,1060,860],[2050,1530,1128,908],[2158,1622,1212,968],[2276,1714,1276,1028],[2404,1804,1370,1092],[2532,1906,1444,1152],[2668,1994,1524,1212],[2812,2102,1614,1276],[2974,2212,1704,1350]],
+            Q: [[13,10,8,6],[22,16,12,10],[36,26,16,12],[52,38,24,18],[64,50,36,24],[88,66,48,28],[110,80,58,36],[130,96,70,48],[150,112,80,56],[190,140,100,70],[220,160,116,84],[260,190,136,100],[300,220,156,112],[340,260,180,130],[380,280,196,148],[430,310,220,160],[480,350,240,180],[510,380,260,200],[570,420,290,220],[610,460,320,240],[680,500,360,270],[730,540,380,290],[800,600,420,320],[870,650,460,350],[950,700,500,380],[1030,760,540,400],[1110,820,580,450],[1200,880,640,480],[1270,950,690,520],[1370,1020,740,560],[1460,1080,790,600],[1540,1150,850,650],[1640,1220,900,690],[1740,1300,960,740],[1840,1380,1020,790],[1950,1460,1080,840],[2060,1540,1140,890],[2170,1620,1200,950],[2280,1700,1260,1010],[2400,1780,1340,1070]],
+            H: [[9,7,6,4],[16,12,10,6],[28,20,14,10],[44,32,20,14],[60,42,26,16],[72,56,36,24],[96,68,44,28],[108,80,56,36],[124,94,68,44],[154,116,80,56],[190,136,98,68],[220,160,112,76],[260,186,130,90],[288,216,150,108],[324,242,170,124],[368,268,190,136],[408,302,220,160],[460,334,240,176],[504,368,260,196],[560,402,280,220],[616,446,310,240],[672,484,330,260],[728,538,370,280],[784,586,410,310],[868,644,450,340],[924,700,480,370],[1004,742,530,400],[1072,802,580,430],[1140,860,620,460],[1228,920,680,510],[1304,986,720,540],[1388,1046,760,580],[1464,1108,820,620],[1548,1172,870,660],[1644,1244,940,710],[1740,1316,990,750],[1844,1390,1050,800],[1944,1464,1100,850],[2060,1540,1170,900],[2164,1622,1240,960]]
+        };
+        const VERSION = 40;
+        const WIDTH = VERSION * 4 + 17;
+        const ALIGNMENT_PATTERN_POSITIONS = [
+            [],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],
+            [6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],
+            [6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],
+            [6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],
+            [6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],
+            [6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],
+            [6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]
+        ];
+
+        const GF16 = [0,1,2,4,8,16,5,10,20,40,80,160,155,135,99,43,86,172,147,111,63,126,252,245,235,211,159,131,107,59,118,236,223,191,55,110,60,120,240,237,227,199,79,158,131,107,59,118,236,223,191,55,110,60,120,240,237,227,199,79,158,129,115,67,134,99,43,86,172,147,111,63,126,252,245,235,211,159,131,107,59,118,236,223,191,55,110,60,120,240,237,227,199,79,158,129,115,67,134,99,43,86,172,147,111,63,126,252,253,247,239,215,167,139,95,31,62,124,248,253,247,239,215,167,139,95,31,62,124,248,255,251,243,223,191,55,110,60,120,240,237,227,199,79,158,129,115,67,134,99,43,86,172,147,111,63,126,252,245,235,211,159,131,107,59,118,236,223,191,55,110,60,120,240,237,227,199,79,158,129,115,67,134,99,43,86,172,147,111,63,126,252,245,235,211,159,131,107,59,118,236,223,191,55,110,60,120,240,237,227,199,79,158,129,115,67,134,99,43,86,172,147,111,63,126,252];
+
+        function gfMul(a, b) {
+            if (a === 0 || b === 0) return 0;
+            return GF16[(GF16.indexOf(a) + GF16.indexOf(b)) % 15];
+        }
+
+        function rsEncode(data, nsym) {
+            let gen = [1];
+            for (let i = 0; i < nsym; i++) {
+                let ng = new Array(gen.length + 1).fill(0);
+                for (let j = 0; j < gen.length; j++) {
+                    ng[j] ^= gen[j];
+                    ng[j + 1] ^= gfMul(gen[j], GF16[i]);
+                }
+                gen = ng;
+            }
+            let res = [...data, ...new Array(nsym).fill(0)];
+            for (let i = 0; i < data.length; i++) {
+                let c = res[i];
+                if (c !== 0) {
+                    for (let j = 1; j < gen.length; j++) {
+                        res[i + j] ^= gfMul(gen[j], c);
+                    }
+                }
+            }
+            return res.slice(data.length);
+        }
+
+        function getNumRawDataModules(ver) {
+            let n = (16 * ver + 128) * ver + 64;
+            if (ver >= 2) {
+                let numAlign = Math.floor(ver / 7) + 2;
+                let n2 = (25 * numAlign - 10) * numAlign - 55;
+                if (ver >= 7) n2 += 36;
+                n -= n2;
+            }
+            return n;
+        }
+
+        function getNumDataCodewords(ver, ecl) {
+            let eclIdx = {L:0, M:1, Q:2, H:3}[ecl];
+            return DATA_CAPACITY_BYTES[ecl][ver - 1][eclIdx];
+        }
+
+        function getVersion(dataLen, ecl) {
+            for (let ver = 1; ver <= 40; ver++) {
+                let capacity = getNumDataCodewords(ver, ecl);
+                // Version info: 4 bits version + 3 bits ecl + 8 bits char count (ver 1-9) or 16 bits (ver 10+)
+                let headerBytes = ver <= 9 ? 1 : 2;
+                if (dataLen + headerBytes <= capacity) return ver;
+            }
+            return -1;
+        }
+
+        function encodeData(data, ecl) {
+            let bytes = new TextEncoder().encode(data);
+            let ver = getVersion(bytes.length, ecl);
+            if (ver < 0) return null;
+            
+            let capacity = getNumDataCodewords(ver, ecl);
+            let headerBits = ver <= 9 ? 8 : 16;
+            let totalBits = 4 + 4 + headerBits + bytes.length * 8;
+            let totalBytes = Math.ceil(totalBits / 8);
+            
+            let dataBits = [];
+            // Mode indicator (4 bits): 0100 for byte mode
+            [0,1,0,0].forEach(b => dataBits.push(b));
+            // ECL (2 bits): M=01
+            [0,1].forEach(b => dataBits.push(b));
+            // Character count
+            let ccBits = ver <= 9 ? 8 : 16;
+            for (let i = ccBits - 1; i >= 0; i--) {
+                dataBits.push((bytes.length >> i) & 1);
+            }
+            // Data
+            for (let b of bytes) {
+                for (let i = 7; i >= 0; i--) {
+                    dataBits.push((b >> i) & 1);
+                }
+            }
+            // Terminator
+            let termLen = Math.min(4, capacity * 8 - dataBits.length);
+            for (let i = 0; i < termLen; i++) dataBits.push(0);
+            // Pad to byte boundary
+            while (dataBits.length % 8 !== 0) dataBits.push(0);
+            // Pad bytes
+            let padBytes = [0xEC, 0x11];
+            let pi = 0;
+            while (dataBits.length < capacity * 8) {
+                let pb = padBytes[pi % 2];
+                for (let i = 7; i >= 0; i--) {
+                    dataBits.push((pb >> i) & 1);
+                }
+                pi++;
+            }
+            
+            // Convert to bytes
+            let dataBytes = [];
+            for (let i = 0; i < dataBits.length; i += 8) {
+                let byte = 0;
+                for (let j = 0; j < 8; j++) {
+                    byte = (byte << 1) | dataBits[i + j];
+                }
+                dataBytes.push(byte);
+            }
+            
+            return { ver, dataBytes };
+        }
+
+        function createMatrix(ver) {
+            let size = ver * 4 + 17;
+            let matrix = Array.from({length: size}, () => Array(size).fill(null));
+            let reserved = Array.from({length: size}, () => Array(size).fill(false));
+            return { matrix, reserved, size };
+        }
+
+        function setFunctionPatterns({matrix, reserved, size}, ver) {
+            // Finder patterns
+            function setFinder(x, y) {
+                for (let dy = -1; dy <= 7; dy++) {
+                    for (let dx = -1; dx <= 7; dx++) {
+                        let px = x + dx, py = y + dy;
+                        if (px < 0 || px >= size || py < 0 || py >= size) continue;
+                        let isOuter = dx === 0 || dx === 6 || dy === 0 || dy === 6;
+                        let isInner = dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4;
+                        matrix[py][px] = isOuter || isInner ? 1 : 0;
+                        reserved[py][px] = true;
+                    }
+                }
+            }
+            setFinder(0, 0);
+            setFinder(size - 7, 0);
+            setFinder(0, size - 7);
+            
+            // Alignment patterns
+            if (ver >= 2) {
+                let positions = ALIGNMENT_PATTERN_POSITIONS[ver - 1];
+                for (let y of positions) {
+                    for (let x of positions) {
+                        if (reserved[y][x]) continue;
+                        for (let dy = -2; dy <= 2; dy++) {
+                            for (let dx = -2; dx <= 2; dx++) {
+                                let isEdge = Math.abs(dx) === 2 || Math.abs(dy) === 2;
+                                let isCenter = dx === 0 && dy === 0;
+                                matrix[y + dy][x + dx] = isEdge || isCenter ? 1 : 0;
+                                reserved[y + dy][x + dx] = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Timing patterns
+            for (let i = 8; i < size - 8; i++) {
+                if (!reserved[6][i]) {
+                    matrix[6][i] = i % 2 === 0 ? 1 : 0;
+                    reserved[6][i] = true;
+                }
+                if (!reserved[i][6]) {
+                    matrix[i][6] = i % 2 === 0 ? 1 : 0;
+                    reserved[i][6] = true;
+                }
+            }
+            
+            // Dark module
+            matrix[4 * ver + 9][8] = 1;
+            reserved[4 * ver + 9][8] = true;
+            
+            // Format info areas (reserved for later)
+            for (let i = 0; i < 8; i++) {
+                reserved[8][i] = true;
+                reserved[8][size - 1 - i] = true;
+                reserved[i][8] = true;
+                reserved[size - 1 - i][8] = true;
+            }
+            reserved[8][8] = true;
+            
+            // Version info areas (ver >= 7)
+            if (ver >= 7) {
+                for (let i = 0; i < 6; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        reserved[i][size - 11 + j] = true;
+                        reserved[size - 11 + j][i] = true;
+                    }
+                }
+            }
+        }
+
+        function getDataBits({ver, dataBytes}) {
+            let ecl = "M";
+            let numBlocks = NUM_EC_BLOCKS[ecl][ver - 1];
+            let blockLen = ECC_CODEWORDS_PER_BLOCK[ecl][ver - 1];
+            let totalData = dataBytes.length;
+            
+            // Split into blocks and add EC
+            let allCodewords = [];
+            let offset = 0;
+            for (let i = 0; i < numBlocks; i++) {
+                let len = Math.floor((totalData - numEcForAllBlocks(ver, ecl)) / numBlocks);
+                let extra = (i < (totalData % numBlocks)) ? 1 : 0;
+                let block = dataBytes.slice(offset, offset + len + extra);
+                let ec = rsEncode(block, blockLen);
+                allCodewords.push(...block, ...ec);
+                offset += len + extra;
+            }
+            
+            // Convert to bit stream
+            let bits = [];
+            for (let b of allCodewords) {
+                for (let i = 7; i >= 0; i--) {
+                    bits.push((b >> i) & 1);
+                }
+            }
+            return bits;
+        }
+
+        function numEcForAllBlocks(ver, ecl) {
+            let numBlocks = NUM_EC_BLOCKS[ecl][ver - 1];
+            let blockLen = ECC_CODEWORDS_PER_BLOCK[ecl][ver - 1];
+            return numBlocks * blockLen;
+        }
+
+        function placeDataBits({matrix, reserved, size}, bits, ver) {
+            let bitIdx = 0;
+            let upward = true;
+            for (let right = size - 1; right >= 1; right -= 2) {
+                if (right === 6) right = 5;
+                for (let vert = 0; vert < size; vert++) {
+                    for (let j = 0; j < 2; j++) {
+                        let x = right - j;
+                        let y = upward ? size - 1 - vert : vert;
+                        if (reserved[y][x]) continue;
+                        matrix[y][x] = bitIdx < bits.length ? bits[bitIdx] : 0;
+                        bitIdx++;
+                    }
+                }
+                upward = !upward;
+            }
+        }
+
+        function maskMatrix({matrix, reserved, size}, maskNum) {
+            let maskFn = [
+                (x, y) => (x + y) % 2 === 0,
+                (x, y) => y % 2 === 0,
+                (x, y) => x % 3 === 0,
+                (x, y) => (x + y) % 3 === 0,
+                (x, y) => (Math.floor(y/2) + Math.floor(x/3)) % 2 === 0,
+                (x, y) => (x*y)%2 + (x*y)%3 === 0,
+                (x, y) => ((x*y)%2 + (x*y)%3) % 2 === 0,
+                (x, y) => ((x+y)%2 + (x*y)%3) % 2 === 0
+            ][maskNum];
+            
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (!reserved[y][x] && maskFn(x, y)) {
+                        matrix[y][x] ^= 1;
+                    }
+                }
+            }
+        }
+
+        function getFormatBits(ecl, maskNum) {
+            let eclBits = {L: 1, M: 0, Q: 3, H: 2}[ecl];
+            let formatData = (eclBits << 3) | maskNum;
+            let bch = formatData << 10;
+            for (let i = 4; i >= 0; i--) {
+                if (bch & (1 << (i + 10))) {
+                    bch ^= 0x537 << i;
+                }
+            }
+            let format = ((formatData << 10) | bch) ^ 0x5412;
+            let bits = [];
+            for (let i = 14; i >= 0; i--) {
+                bits.push((format >> i) & 1);
+            }
+            return bits;
+        }
+
+        function placeFormatBits({matrix, reserved, size}, bits) {
+            let positions1 = [
+                [8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],
+                [7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]
+            ];
+            let positions2 = [
+                [size-1,8],[size-2,8],[size-3,8],[size-4,8],[size-5,8],[size-6,8],[size-7,8],
+                [8,size-8],[8,size-7],[8,size-6],[8,size-5],[8,size-4],[8,size-3],[8,size-2],[8,size-1]
+            ];
+            for (let i = 0; i < 15; i++) {
+                let [x1, y1] = positions1[i];
+                let [x2, y2] = positions2[i];
+                matrix[y1][x1] = bits[i];
+                matrix[y2][x2] = bits[i];
+            }
+        }
+
+        function generateQR(data, ecl = "M") {
+            let encoded = encodeData(data, ecl);
+            if (!encoded) return null;
+            
+            let { ver, dataBytes } = encoded;
+            let { matrix, reserved, size } = createMatrix(ver);
+            
+            setFunctionPatterns({matrix, reserved, size}, ver);
+            let bits = getDataBits(encoded);
+            placeDataBits({matrix, reserved, size}, bits, ver);
+            
+            // Try all masks, pick best
+            let bestScore = Infinity;
+            let bestMatrix = null;
+            
+            for (let mask = 0; mask < 8; mask++) {
+                let testMatrix = matrix.map(r => [...r]);
+                maskMatrix({matrix: testMatrix, reserved, size}, mask);
+                placeFormatBits({matrix: testMatrix, reserved: reserved, size}, getFormatBits(ecl, mask));
+                
+                let score = evaluatePattern(testMatrix, size);
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestMatrix = testMatrix;
+                }
+            }
+            
+            return { matrix: bestMatrix, size, version: ver };
+        }
+
+        function evaluatePattern(matrix, size) {
+            let score = 0;
+            // Adjacent same-color modules (5 in a row)
+            for (let y = 0; y < size; y++) {
+                let count = 1;
+                for (let x = 1; x < size; x++) {
+                    if (matrix[y][x] === matrix[y][x-1]) {
+                        count++;
+                        if (count === 5) score += 3;
+                        else if (count > 5) score += 1;
+                    } else count = 1;
+                }
+            }
+            for (let x = 0; x < size; x++) {
+                let count = 1;
+                for (let y = 1; y < size; y++) {
+                    if (matrix[y][x] === matrix[y-1][x]) {
+                        count++;
+                        if (count === 5) score += 3;
+                        else if (count > 5) score += 1;
+                    } else count = 1;
+                }
+            }
+            // Finder-like patterns
+            for (let y = 0; y < size - 6; y++) {
+                for (let x = 0; x < size - 6; x++) {
+                    let pattern = 0;
+                    for (let dy = 0; dy < 7; dy++) {
+                        pattern = (pattern << 1) | matrix[y+dy][x];
+                    }
+                    if (pattern === 0x07 || pattern === 0x45) score += 40;
+                }
+            }
+            // Proportion of dark modules
+            let dark = 0;
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (matrix[y][x] === 1) dark++;
+                }
+            }
+            let pct = dark / (size * size) * 100;
+            score += Math.abs(pct - 50) / 5 * 10;
+            return score;
+        }
+
+        return { generateQR };
+    })();
+
+    // UI Logic
+    let currentType = "url";
+    
+    document.querySelectorAll(".type-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".type-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentType = btn.dataset.type;
+            document.querySelectorAll(".form-type").forEach(f => f.classList.add("hidden"));
+            document.getElementById("form-" + currentType).classList.remove("hidden");
+            document.getElementById("qr-output").style.display = "none";
+        });
+    });
+
+    function generateQR() {
+        let errorMsg = document.getElementById("error-msg");
+        errorMsg.style.display = "none";
+        
+        let data = "";
+        switch(currentType) {
+            case "url":
+                data = document.getElementById("qr-url").value.trim();
+                if (!data) { showError("Please enter a URL"); return; }
+                if (!data.startsWith("http://") && !data.startsWith("https://")) {
+                    data = "https://" + data;
+                }
+                break;
+            case "text":
+                data = document.getElementById("qr-text").value.trim();
+                if (!data) { showError("Please enter some text"); return; }
+                break;
+            case "wifi":
+                let ssid = document.getElementById("wifi-ssid").value.trim();
+                let pass = document.getElementById("wifi-pass").value;
+                let sec = document.getElementById("wifi-security").value;
+                if (!ssid) { showError("Please enter network name"); return; }
+                data = "WIFI:T:" + sec + ";S:" + ssid + ";P:" + pass + ";;";
+                break;
+            case "email":
+                let addr = document.getElementById("email-addr").value.trim();
+                let subj = document.getElementById("email-subject").value.trim();
+                let body = document.getElementById("email-body").value.trim();
+                if (!addr) { showError("Please enter email address"); return; }
+                data = "mailto:" + addr + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+                break;
+        }
+
+        let size = parseInt(document.getElementById("qr-size").value);
+        let fgColor = document.getElementById("qr-fg").value;
+        let bgColor = document.getElementById("qr-bg").value;
+
+        let qr = QRCodeLib.generateQR(data);
+        if (!qr) { showError("Data too long for QR code. Try shorter text."); return; }
+
+        let canvas = document.getElementById("qr-canvas");
+        let moduleCount = qr.size;
+        let moduleSize = size / moduleCount;
+        
+        canvas.width = size;
+        canvas.height = size;
+        let ctx = canvas.getContext("2d");
+        
+        // Background
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, size, size);
+        
+        // Modules
+        ctx.fillStyle = fgColor;
+        for (let y = 0; y < moduleCount; y++) {
+            for (let x = 0; x < moduleCount; x++) {
+                if (qr.matrix[y][x] === 1) {
+                    ctx.fillRect(
+                        Math.round(x * moduleSize),
+                        Math.round(y * moduleSize),
+                        Math.ceil(moduleSize),
+                        Math.ceil(moduleSize)
+                    );
+                }
+            }
+        }
+
+        // Preview
+        document.getElementById("qr-data-preview").textContent = 
+            currentType === "url" ? "URL: " + data.substring(0, 50) + (data.length > 50 ? "..." : "") :
+            currentType === "wifi" ? "WiFi: " + document.getElementById("wifi-ssid").value :
+            currentType === "email" ? "Email: " + document.getElementById("email-addr").value :
+            "Text: " + data.substring(0, 50) + (data.length > 50 ? "..." : "");
+
+        // Download buttons
+        document.getElementById("dl-png").href = canvas.toDataURL("image/png");
+        
+        // SVG download
+        let svgParts = [`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`];
+        svgParts.push(`<rect width="${size}" height="${size}" fill="${bgColor}"/>`);
+        for (let y = 0; y < moduleCount; y++) {
+            for (let x = 0; x < moduleCount; x++) {
+                if (qr.matrix[y][x] === 1) {
+                    svgParts.push(`<rect x="${Math.round(x * moduleSize)}" y="${Math.round(y * moduleSize)}" width="${Math.ceil(moduleSize)}" height="${Math.ceil(moduleSize)}" fill="${fgColor}"/>`);
+                }
+            }
+        }
+        svgParts.push("</svg>");
+        let svgBlob = new Blob([svgParts.join("")], {type: "image/svg+xml"});
+        document.getElementById("dl-svg").href = URL.createObjectURL(svgBlob);
+
+        document.getElementById("qr-output").style.display = "block";
+    }
+
+    function showError(msg) {
+        let errorMsg = document.getElementById("error-msg");
+        errorMsg.textContent = msg;
+        errorMsg.style.display = "block";
+    }
+    </script>
+</body>
+</html>

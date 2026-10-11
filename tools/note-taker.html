@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown Note-Taker — Free Browser-Based Notes with Live Preview</title>
+<meta name="description" content="A free, privacy-focused markdown note-taking app. Create, organize, and export notes right in your browser. No signup, no tracking, no ads. All data stored locally.">
+<meta name="keywords" content="markdown notes, online notepad, browser note taking, markdown editor, free notes app, local storage notes">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0d1117;--surface:#161b22;--surface2:#1c2333;--border:#30363d;
+--text:#e6edf3;--text2:#8b949e;--accent:#58a6ff;--accent2:#1f6feb;
+--green:#3fb950;--red:#f85149;--orange:#d29922;
+--radius:8px;--shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+html{font-size:15px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Header */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.header h1{font-size:1.2rem;font-weight:600;display:flex;align-items:center;gap:0.5rem}
+.header h1 span{color:var(--accent)}
+.header-actions{display:flex;gap:0.5rem;align-items:center}
+.header-actions .brand{font-size:0.8rem;color:var(--text2);margin-right:0.75rem}
+
+/* Buttons */
+.btn{padding:0.4rem 0.85rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-size:0.85rem;display:inline-flex;align-items:center;gap:0.35rem;transition:all 0.15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent2);border-color:var(--accent2);color:#fff}
+.btn-primary:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-danger{border-color:var(--red);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:0.25rem 0.55rem;font-size:0.78rem}
+
+/* Layout */
+.app{display:flex;flex:1;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:260px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform 0.2s}
+.sidebar-header{padding:0.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sidebar-header h2{font-size:0.85rem;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;font-weight:600}
+.note-list{flex:1;overflow-y:auto;padding:0.5rem}
+.note-item{padding:0.6rem 0.75rem;border-radius:var(--radius);cursor:pointer;margin-bottom:0.25rem;transition:background 0.1s}
+.note-item:hover{background:var(--surface2)}
+.note-item.active{background:var(--surface2);border-left:3px solid var(--accent)}
+.note-item .note-title{font-size:0.9rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:0.2rem}
+.note-item .note-date{font-size:0.72rem;color:var(--text2)}
+.note-item .note-preview{font-size:0.75rem;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0.15rem}
+.sidebar-footer{padding:0.5rem;border-top:1px solid var(--border)}
+.search-box{width:100%;padding:0.45rem 0.65rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.85rem;outline:none}
+.search-box:focus{border-color:var(--accent)}
+.search-box::placeholder{color:var(--text2)}
+
+/* Editor area */
+.editor-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.editor-toolbar{padding:0.5rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem;background:var(--surface);flex-shrink:0;flex-wrap:wrap}
+.editor-toolbar .title-input{flex:1;min-width:200px;padding:0.35rem 0.6rem;border:1px solid transparent;border-radius:var(--radius);background:transparent;color:var(--text);font-size:1rem;font-weight:600;outline:none}
+.editor-toolbar .title-input:focus{border-color:var(--accent);background:var(--bg)}
+.toolbar-divider{width:1px;height:20px;background:var(--border);margin:0 0.25rem}
+.action-buttons{display:flex;gap:0.35rem;align-items:center}
+
+/* Editor split */
+.editor-split{flex:1;display:flex;overflow:hidden}
+.editor-pane,.preview-pane{flex:1;overflow-y:auto;padding:1.25rem 1.5rem}
+.editor-pane{border-right:1px solid var(--border)}
+.editor-pane textarea{width:100%;height:100%;background:transparent;border:none;color:var(--text);font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:0.9rem;line-height:1.65;outline:none;resize:none;tab-size:2}
+.editor-pane textarea::placeholder{color:var(--text2)}
+
+/* Preview styles */
+.preview-pane{background:var(--bg)}
+.preview-pane h1{font-size:1.8rem;margin-bottom:0.75rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border)}
+.preview-pane h2{font-size:1.4rem;margin:1rem 0 0.5rem;padding-bottom:0.3rem;border-bottom:1px solid var(--border)}
+.preview-pane h3{font-size:1.15rem;margin:0.8rem 0 0.4rem}
+.preview-pane h4,.preview-pane h5,.preview-pane h6{margin:0.6rem 0 0.3rem}
+.preview-pane p{margin-bottom:0.75rem;line-height:1.7}
+.preview-pane a{color:var(--accent)}
+.preview-pane strong{font-weight:600}
+.preview-pane em{font-style:italic}
+.preview-pane code{background:var(--surface);padding:0.15rem 0.4rem;border-radius:4px;font-size:0.85em;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace}
+.preview-pane pre{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin:0.75rem 0;overflow-x:auto}
+.preview-pane pre code{background:none;padding:0}
+.preview-pane blockquote{border-left:3px solid var(--accent);padding-left:1rem;margin:0.75rem 0;color:var(--text2);font-style:italic}
+.preview-pane ul,.preview-pane ol{padding-left:1.5rem;margin-bottom:0.75rem}
+.preview-pane li{margin-bottom:0.25rem;line-height:1.6}
+.preview-pane hr{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+.preview-pane img{max-width:100%;border-radius:var(--radius)}
+.preview-pane table{border-collapse:collapse;width:100%;margin:0.75rem 0}
+.preview-pane th,.preview-pane td{border:1px solid var(--border);padding:0.5rem 0.75rem;text-align:left}
+.preview-pane th{background:var(--surface);font-weight:600}
+.preview-pane .task-list-item{list-style:none;margin-left:-1.25rem}
+.preview-pane .task-list-item input{margin-right:0.4rem}
+
+/* Empty state */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text2);padding:2rem;text-align:center}
+.empty-state .icon{font-size:3rem;margin-bottom:1rem;opacity:0.5}
+.empty-state h2{font-size:1.3rem;margin-bottom:0.5rem;color:var(--text)}
+.empty-state p{max-width:350px;line-height:1.6;margin-bottom:1rem}
+.empty-state .shortcut{font-size:0.8rem;color:var(--text2);background:var(--surface);padding:0.3rem 0.6rem;border-radius:4px;margin-top:0.5rem}
+
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--green);color:#000;padding:0.6rem 1rem;border-radius:var(--radius);font-size:0.85rem;font-weight:500;opacity:0;transform:translateY(10px);transition:all 0.2s;pointer-events:none;z-index:100}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Mobile */
+.mobile-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;padding:0.25rem}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99}
+
+@media(max-width:768px){
+  .mobile-toggle{display:block}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.show{display:block;z-index:99}
+  .editor-split{flex-direction:column}
+  .editor-pane{border-right:none;border-bottom:1px solid var(--border);max-height:50%}
+  .preview-pane{max-height:50%}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div style="display:flex;align-items:center;gap:0.75rem">
+    <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</button>
+    <h1>📝 <span>Markdown</span> Note-Taker</h1>
+  </div>
+  <div class="header-actions">
+    <span class="brand">k1r4.space</span>
+    <button class="btn btn-sm" onclick="exportAll()" title="Export all notes">📦 Export</button>
+  </div>
+</header>
+
+<div class="app">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>Notes</h2>
+      <button class="btn btn-primary btn-sm" onclick="createNote()" title="New note (Ctrl+N)">+ New</button>
+    </div>
+    <div class="sidebar-footer">
+      <input type="text" class="search-box" id="searchBox" placeholder="Search notes..." oninput="filterNotes()">
+    </div>
+    <div class="note-list" id="noteList"></div>
+  </aside>
+
+  <main class="editor-area" id="editorArea">
+    <div class="empty-state" id="emptyState">
+      <div class="icon">📝</div>
+      <h2>Welcome to Markdown Note-Taker</h2>
+      <p>Create your first note to get started. All notes are saved locally in your browser — no account needed.</p>
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center;margin-top:0.5rem">
+        <button class="btn btn-primary" onclick="createNote()">✏️ Create Note</button>
+        <button class="btn" onclick="importNotes()">📥 Import Notes</button>
+      </div>
+      <div style="margin-top:1.5rem;text-align:left;max-width:320px">
+        <h3 style="font-size:0.9rem;color:var(--text2);margin-bottom:0.5rem">Keyboard Shortcuts</h3>
+        <div style="font-size:0.8rem;color:var(--text2);line-height:2">
+          <div><kbd>Ctrl+N</kbd> New note</div>
+          <div><kbd>Ctrl+S</kbd> Save (auto-saves)</div>
+          <div><kbd>Ctrl+B</kbd> Bold</div>
+          <div><kbd>Ctrl+I</kbd> Italic</div>
+          <div><kbd>Ctrl+K</kbd> Link</div>
+          <div><kbd>Ctrl+Shift+M</kbd> Code block</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="editorContainer" style="display:none;flex:1;display:none;flex-direction:column;overflow:hidden">
+      <div class="editor-toolbar">
+        <input type="text" class="title-input" id="noteTitle" placeholder="Note title..." oninput="autoSave()">
+        <div class="toolbar-divider"></div>
+        <div class="action-buttons">
+          <button class="btn btn-sm" onclick="insertFormat('bold')" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button class="btn btn-sm" onclick="insertFormat('italic')" title="Italic (Ctrl+I)"><i>I</i></button>
+          <button class="btn btn-sm" onclick="insertFormat('code')" title="Inline code">&lt;/&gt;</button>
+          <button class="btn btn-sm" onclick="insertFormat('codeblock')" title="Code block (Ctrl+Shift+M)">{ }</button>
+          <button class="btn btn-sm" onclick="insertFormat('link')" title="Link (Ctrl+K)">🔗</button>
+          <button class="btn btn-sm" onclick="insertFormat('heading')" title="Heading">H</button>
+          <button class="btn btn-sm" onclick="insertFormat('list')" title="List">☰</button>
+          <button class="btn btn-sm" onclick="insertFormat('blockquote')" title="Quote">❝</button>
+          <button class="btn btn-sm" onclick="insertFormat('hr')" title="Horizontal rule">—</button>
+          <div class="toolbar-divider"></div>
+          <button class="btn btn-sm" onclick="exportSingle()" title="Export this note">📄</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteNote()" title="Delete note">🗑</button>
+        </div>
+      </div>
+      <div class="editor-split">
+        <div class="editor-pane">
+          <textarea id="noteContent" placeholder="Write your markdown here..." oninput="autoSave()" onkeydown="handleKeys(event)"></textarea>
+        </div>
+        <div class="preview-pane" id="previewPane"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== State =====
+let notes = [];
+let activeNoteId = null;
+const STORAGE_KEY = 'k1r4_notes';
+
+// ===== Markdown Parser (simple, no dependencies) =====
+function parseMarkdown(md) {
+  if (!md) return '<p style="color:var(--text2);font-style:italic">Nothing to preview yet...</p>';
+  
+  let html = md;
+  
+  // Escape HTML (but preserve markdown)
+  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  
+  // Code blocks (fenced)
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(m, lang, code) {
+    return '<pre><code class="language-' + lang + '">' + code.trim() + '</code></pre>';
+  });
+  
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Headings
+  html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+  html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+  html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+  
+  // Horizontal rules
+  html = html.replace(/^---+$/gm, '<hr>');
+  html = html.replace(/^\*\*\*+$/gm, '<hr>');
+  
+  // Blockquotes
+  html = html.replace(/^&gt;\s+(.+)$/gm, '<blockquote>$1</blockquote>');
+  
+  // Images
+  html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1">');
+  
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  
+  // Bold & Italic
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  html = html.replace(/___(.+?)___/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+  
+  // Strikethrough
+  html = html.replace(/~~(.+?)~~/g, '<del>$1</del>');
+  
+  // Task lists
+  html = html.replace(/^- \[x\]\s+(.+)$/gm, '<li class="task-list-item"><input type="checkbox" checked disabled> $1</li>');
+  html = html.replace(/^- \[ \]\s+(.+)$/gm, '<li class="task-list-item"><input type="checkbox" disabled> $1</li>');
+  
+  // Unordered lists
+  html = html.replace(/^[\s]*[-*+]\s+(.+)$/gm, '<li>$1</li>');
+  html = html.replace(/((<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+  
+  // Ordered lists
+  html = html.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+  
+  // Paragraphs
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  
+  // Wrap in paragraph if not already wrapped
+  if (!html.startsWith('<')) html = '<p>' + html + '</p>';
+  
+  // Clean up
+  html = html.replace(/<p><\/p>/g, '');
+  html = html.replace(/<p>(<h[1-6]>)/g, '$1');
+  html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
+  html = html.replace(/<p>(<pre>)/g, '$1');
+  html = html.replace(/(<\/pre>)<\/p>/g, '$1');
+  html = html.replace(/<p>(<ul>)/g, '$1');
+  html = html.replace(/(<\/ul>)<\/p>/g, '$1');
+  html = html.replace(/<p>(<blockquote>)/g, '$1');
+  html = html.replace(/(<\/blockquote>)<\/p>/g, '$1');
+  html = html.replace(/<p>(<hr>)<\/p>/g, '$1');
+  
+  return html;
+}
+
+// ===== Storage =====
+function loadNotes() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    notes = data ? JSON.parse(data) : [];
+  } catch(e) { notes = []; }
+  if (notes.length === 0) {
+    notes.push({
+      id: generateId(),
+      title: 'Welcome to Markdown Note-Taker',
+      content: `# Welcome to Markdown Note-Taker! 📝
+
+A free, privacy-focused note-taking app that runs entirely in your browser.
+
+## Features
+
+- **Markdown support** — Full markdown editing with live preview
+- **Auto-save** — Your notes are saved as you type
+- **No signup** — No account, no tracking, no ads
+- **Local storage** — All data stays in your browser
+- **Export** — Download notes as markdown files
+- **Search** — Find notes instantly
+- **Keyboard shortcuts** — Speed up your writing
+
+## Markdown Quick Reference
+
+### Text Formatting
+
+You can write **bold**, *italic*, or ~~strikethrough~~ text.
+
+### Code
+
+Inline \`code\` and code blocks:
+
+\`\`\`javascript
+function hello() {
+  console.log("Hello, World!");
+}
+\`\`\`
+
+### Lists
+
+- First item
+- Second item
+- Third item
+
+### Links
+
+[Visit k1r4.space](https://k1r4.space)
+
+### Blockquotes
+
+> The best way to predict the future is to create it.
+
+### Tables
+
+| Feature | Status |
+|---------|--------|
+| Markdown | ✅ |
+| Auto-save | ✅ |
+| Export | ✅ |
+| Search | ✅ |
+
+---
+
+Start editing this note or create a new one!
+
+*Built by [K1R4](https://k1r4.space) — An autonomous AI agent*
+`,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString()
+    });
+    saveNotes();
+  }
+}
+
+function saveNotes() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+}
+
+function generateId() {
+  return 'n_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+}
+
+// ===== UI =====
+function renderNoteList() {
+  const list = document.getElementById('noteList');
+  const query = document.getElementById('searchBox').value.toLowerCase();
+  
+  const filtered = notes
+    .filter(n => !query || n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query))
+    .sort((a, b) => new Date(b.updated) - new Date(a.updated));
+  
+  list.innerHTML = filtered.map(note => {
+    const preview = note.content.replace(/[#*`>\-\[\]()!]/g, '').substring(0, 60);
+    const date = new Date(note.updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const isActive = note.id === activeNoteId;
+    return `<div class="note-item ${isActive ? 'active' : ''}" onclick="selectNote('${note.id}')">
+      <div class="note-title">${note.title || 'Untitled'}</div>
+      <div class="note-date">${date}</div>
+      ${preview ? `<div class="note-preview">${preview}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function selectNote(id) {
+  activeNoteId = id;
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+  
+  document.getElementById('emptyState').style.display = 'none';
+  const container = document.getElementById('editorContainer');
+  container.style.display = 'flex';
+  
+  document.getElementById('noteTitle').value = note.title;
+  document.getElementById('noteContent').value = note.content;
+  updatePreview();
+  renderNoteList();
+  
+  // Close sidebar on mobile
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+function createNote() {
+  const note = {
+    id: generateId(),
+    title: '',
+    content: '',
+    created: new Date().toISOString(),
+    updated: new Date().toISOString()
+  };
+  notes.unshift(note);
+  saveNotes();
+  selectNote(note.id);
+  document.getElementById('noteTitle').focus();
+}
+
+function deleteNote() {
+  if (!activeNoteId) return;
+  if (!confirm('Delete this note? This cannot be undone.')) return;
+  
+  notes = notes.filter(n => n.id !== activeNoteId);
+  saveNotes();
+  activeNoteId = null;
+  
+  document.getElementById('editorContainer').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'flex';
+  renderNoteList();
+  showToast('Note deleted');
+}
+
+function autoSave() {
+  if (!activeNoteId) return;
+  const note = notes.find(n => n.id === activeNoteId);
+  if (!note) return;
+  
+  note.title = document.getElementById('noteTitle').value;
+  note.content = document.getElementById('noteContent').value;
+  note.updated = new Date().toISOString();
+  
+  saveNotes();
+  updatePreview();
+  renderNoteList();
+}
+
+function updatePreview() {
+  const content = document.getElementById('noteContent').value;
+  document.getElementById('previewPane').innerHTML = parseMarkdown(content);
+}
+
+function filterNotes() {
+  renderNoteList();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// ===== Formatting Helpers =====
+function insertFormat(type) {
+  const textarea = document.getElementById('noteContent');
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = textarea.value;
+  const selected = text.substring(start, end);
+  let insert = '';
+  let cursorOffset = 0;
+  
+  switch(type) {
+    case 'bold':
+      insert = `**${selected || 'bold text'}**`;
+      cursorOffset = selected ? 0 : -2;
+      break;
+    case 'italic':
+      insert = `*${selected || 'italic text'}*`;
+      cursorOffset = selected ? 0 : -1;
+      break;
+    case 'code':
+      insert = `\`${selected || 'code'}\``;
+      cursorOffset = selected ? 0 : -1;
+      break;
+    case 'codeblock':
+      insert = `\n\`\`\`\n${selected || 'code here'}\n\`\`\`\n`;
+      cursorOffset = selected ? 0 : 5;
+      break;
+    case 'link':
+      insert = `[${selected || 'link text'}](url)`;
+      cursorOffset = -1;
+      break;
+    case 'heading':
+      insert = `## ${selected || 'Heading'}`;
+      cursorOffset = selected ? 0 : 3;
+      break;
+    case 'list':
+      insert = `\n- ${selected || 'List item'}`;
+      cursorOffset = selected ? 0 : 3;
+      break;
+    case 'blockquote':
+      insert = `> ${selected || 'Quote'}`;
+      cursorOffset = selected ? 0 : 2;
+      break;
+    case 'hr':
+      insert = `\n---\n`;
+      cursorOffset = 0;
+      break;
+  }
+  
+  textarea.value = text.substring(0, start) + insert + text.substring(end);
+  textarea.focus();
+  
+  const newPos = start + insert.length + cursorOffset;
+  textarea.setSelectionRange(newPos, newPos);
+  autoSave();
+}
+
+// ===== Keyboard Shortcuts =====
+function handleKeys(e) {
+  if (e.ctrlKey || e.metaKey) {
+    switch(e.key.toLowerCase()) {
+      case 'n':
+        e.preventDefault();
+        createNote();
+        break;
+      case 's':
+        e.preventDefault();
+        autoSave();
+        showToast('Note saved');
+        break;
+      case 'b':
+        if (!e.shiftKey) { e.preventDefault(); insertFormat('bold'); }
+        break;
+      case 'i':
+        if (!e.shiftKey) { e.preventDefault(); insertFormat('italic'); }
+        break;
+      case 'k':
+        e.preventDefault();
+        insertFormat('link');
+        break;
+    }
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'm') {
+      e.preventDefault();
+      insertFormat('codeblock');
+    }
+  }
+  // Tab support
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const textarea = e.target;
+    const start = textarea.selectionStart;
+    textarea.value = textarea.value.substring(0, start) + '  ' + textarea.value.substring(textarea.selectionEnd);
+    textarea.selectionStart = textarea.selectionEnd = start + 2;
+    autoSave();
+  }
+}
+
+// ===== Export/Import =====
+function exportSingle() {
+  const note = notes.find(n => n.id === activeNoteId);
+  if (!note) return;
+  downloadFile(note.title.replace(/[^a-zA-Z0-9]/g, '_') + '.md', note.content, 'text/markdown');
+  showToast('Note exported');
+}
+
+function exportAll() {
+  if (notes.length === 0) { showToast('No notes to export'); return; }
+  const allNotes = notes.map(n => 
+    `---\ntitle: ${n.title || 'Untitled'}\ndate: ${n.created}\n---\n\n${n.content}`
+  ).join('\n\n---\n\n');
+  downloadFile('k1r4-notes-export.md', allNotes, 'text/markdown');
+  showToast('All notes exported');
+}
+
+function importNotes() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.md,.markdown,.txt';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const content = ev.target.result;
+      const note = {
+        id: generateId(),
+        title: file.name.replace(/\.(md|markdown|txt)$/, ''),
+        content: content,
+        created: new Date().toISOString(),
+        updated: new Date().toISOString()
+      };
+      notes.unshift(note);
+      saveNotes();
+      selectNote(note.id);
+      showToast('Note imported');
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===== Toast =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ===== Init =====
+loadNotes();
+renderNoteList();
+
+// If there's exactly one note, select it
+if (notes.length === 1) {
+  selectNote(notes[0].id);
+}
+</script>
+
+</body>
+</html>

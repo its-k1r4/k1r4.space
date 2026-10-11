@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Build a JSON Formatter in Vanilla JavaScript</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="description" content="Learn how to build a JSON formatter and validator from scratch — parse, beautify, minify, and validate JSON with zero dependencies.">
+    <link rel="canonical" href="https://k1r4.space/tutorials/json-formatter-tutorial.html">
+    <meta property="og:title" content="How to Build a JSON Formatter in Vanilla JavaScript">
+    <meta property="og:description" content="Step-by-step guide to building a fully functional JSON formatter and validator.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://k1r4.space/tutorials/json-formatter-tutorial.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.15);
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header { text-align: center; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, #22c55e, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1rem; }
+        .meta { color: var(--text-muted); font-size: 0.85rem; }
+        .meta span { margin: 0 0.5rem; }
+        h2 { font-size: 1.5rem; margin: 3rem 0 1rem; color: var(--accent); }
+        h3 { font-size: 1.2rem; margin: 2rem 0 0.75rem; color: var(--text); }
+        p { margin-bottom: 1.2rem; color: var(--text-muted); }
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: var(--surface);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #e2e8f0;
+        }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .highlight {
+            border-left: 3px solid var(--accent);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+        }
+        .highlight p { margin: 0; color: var(--text); }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+        }
+        .btn-outline:hover { background: var(--accent-glow); }
+        .tip {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .tip::before { content: "💡 Tip: "; font-weight: 600; color: var(--green); }
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .warning::before { content: "⚠️ Note: "; font-weight: 600; color: var(--orange); }
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .toc h3 { margin-top: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+        .toc ol { padding-left: 1.5rem; }
+        .toc li { margin: 0.5rem 0; }
+        .toc a { color: var(--accent); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        .tag {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.2em 0.6em;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0.2rem;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .container { padding: 1rem; }
+            pre { padding: 1rem; }
+            pre code { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>How to Build a JSON Formatter</h1>
+            <p class="subtitle">A step-by-step guide to building a fully functional JSON formatter, validator, and minifier — zero dependencies.</p>
+            <p class="meta">
+                <span>~7 min read</span>
+                <span>•</span>
+                <span>October 2026</span>
+            </p>
+            <div style="margin-top: 1rem;">
+                <span class="tag">javascript</span>
+                <span class="tag">json</span>
+                <span class="tag">tutorial</span>
+                <span class="tag">frontend</span>
+            </div>
+        </header>
+
+        <div class="toc">
+            <h3>In This Tutorial</h3>
+            <ol>
+                <li><a href="#why">Why Build a JSON Formatter?</a></li>
+                <li><a href="#html">Step 1: HTML Layout</a></li>
+                <li><a href="#parse">Step 2: Parse and Validate</a></li>
+                <li><a href="#beautify">Step 3: Beautify (Pretty-Print)</a></li>
+                <li><a href="#minify">Step 4: Minify</a></li>
+                <li><a href="#syntax-highlight">Step 5: Syntax Highlighting</a></li>
+                <li><a href="#error-handling">Step 6: Error Handling</a></li>
+                <li><a href="#complete">The Complete Solution</a></li>
+                <li><a href="#try">Try It Live</a></li>
+            </ol>
+        </div>
+
+        <h2 id="why">Why Build a JSON Formatter?</h2>
+        <p>JSON is the lingua franca of the web. Every API returns it, every config file uses it, and every developer has spent time staring at a wall of unreadable JSON trying to find the missing comma.</p>
+        <p>Most JSON formatters online are either bloated web apps full of ads, or they send your data to a remote server. Building your own gives you:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li><strong>Privacy</strong> — Your data never leaves your browser</li>
+            <li><strong>Speed</strong> — No network requests, instant formatting</li>
+            <li><strong>Learning</strong> — Understanding JSON parsing at the deepest level</li>
+        </ul>
+        <div class="tip">
+            <p>This tutorial teaches you about error handling, string manipulation, and the core JSON API that powers every modern web application.</p>
+        </div>
+
+        <h2 id="html">Step 1: The HTML Layout</h2>
+        <p>A JSON formatter needs an input area, an output area, and action buttons. Here's the structure:</p>
+        <pre><code class="language-html"><span class="code-label">HTML">&lt;div class="json-formatter"&gt;
+  &lt;!-- Action buttons --&gt;
+  &lt;div class="toolbar"&gt;
+    &lt;button id="format-btn"&gt;Format&lt;/button&gt;
+    &lt;button id="minify-btn"&gt;Minify&lt;/button&gt;
+    &lt;button id="copy-btn"&gt;Copy&lt;/button&gt;
+    &lt;button id="clear-btn"&gt;Clear&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Input/Output panels --&gt;
+  &lt;div class="panels"&gt;
+    &lt;div class="panel"&gt;
+      &lt;label&gt;Input JSON&lt;/label&gt;
+      &lt;textarea id="input" placeholder='{"key": "value"}'&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+
+    &lt;div class="panel"&gt;
+      &lt;label&gt;Output&lt;/label&gt;
+      &lt;pre id="output"&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Status bar --&gt;
+  &lt;div id="status" class="status"&gt;Enter JSON above and click Format&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p>Key design decisions:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li><strong>Textarea for input</strong> — Users paste raw JSON. A textarea is the right tool.</li>
+            <li><strong>&lt;pre&gt; for output</strong> — Preserves whitespace and line breaks. Can be styled for syntax highlighting.</li>
+            <li><strong>Status bar</strong> — Shows success, errors, or informational messages.</li>
+            <li><strong>Four actions</strong> — Format, Minify, Copy, Clear cover all common use cases.</li>
+        </ul>
+
+        <h2 id="parse">Step 2: Parse and Validate</h2>
+        <p>Every JSON operation starts with parsing. <code>JSON.parse()</code> either returns your data or throws an error:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// Core parsing function — returns { success, data, error }
+function parseJSON(input) {
+  try {
+    const data = JSON.parse(input);
+    return { success: true, data: data, error: null };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: error.message
+    };
+  }
+}
+
+// Usage
+const result = parseJSON('{"name": "K1R4", "version": 1}');
+// result = { success: true, data: { name: "K1R4", version: 1 }, error: null }
+
+const badResult = parseJSON('{name: K1R4}');
+// badResult = { success: false, data: null, error: "Unexpected token n..." }</code></pre>
+        <div class="highlight">
+            <p><strong>Key insight:</strong> <code>JSON.parse()</code> is synchronous and throws on invalid JSON. The try/catch pattern is the only way to handle invalid input gracefully. Always wrap it in try/catch — never assume the input is valid.</p>
+        </div>
+
+        <h2 id="beautify">Step 3: Beautify (Pretty-Print)</h2>
+        <p>Beautifying JSON is deceptively simple: parse it, then stringify with indentation:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// Beautify: parse then re-stringify with indentation
+function beautifyJSON(input, indent = 2) {
+  const result = parseJSON(input);
+  if (!result.success) {
+    throw new Error(result.error);
+  }
+  return JSON.stringify(result.data, null, indent);
+}
+
+// Example:
+const raw = '{"users":[{"name":"Alice"},{"name":"Bob"}]}';
+beautifyJSON(raw, 2);
+// Returns:
+// {
+//   "users": [
+//     {
+//       "name": "Alice"
+//     },
+//     {
+//       "name": "Bob"
+//     }
+//   ]
+// }
+
+// With 4-space indentation:
+beautifyJSON(raw, 4);
+// Returns:
+// {
+//     "users": [
+//         {
+//             "name": "Alice"
+//         },
+//         {
+//             "name": "Bob"
+//         }
+//     ]
+// }</code></pre>
+        <p>The second argument to <code>JSON.stringify()</code> — <code>null</code> — is the replacer parameter. When it's null, all properties are included. You can pass a function or array to filter specific keys.</p>
+        <div class="tip">
+            <p>The third argument to <code>JSON.stringify()</code> controls indentation. Use 2 spaces for web APIs (smaller payload), 4 spaces for readability (code reviews, config files). The default is 2.</p>
+        </div>
+
+        <h2 id="minify">Step 4: Minify</h2>
+        <p>Minifying is the reverse: parse then stringify with no whitespace:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// Minify: parse then re-stringify with zero whitespace
+function minifyJSON(input) {
+  const result = parseJSON(input);
+  if (!result.success) {
+    throw new Error(result.error);
+  }
+  return JSON.stringify(result.data);
+}
+
+// Example:
+const pretty = JSON.stringify({
+  users: [
+    { name: "Alice" },
+    { name: "Bob" }
+  ]
+}, null, 2);
+
+// pretty = '{\n  "users": [\n    {\n      "name": "Alice"\n    },\n    {\n      "name": "Bob"\n    }\n  ]\n}'
+
+minifyJSON(pretty);
+// Returns: '{"users":[{"name":"Alice"},{"name":"Bob"}]}'</code></pre>
+        <p>Minification removes all whitespace, newlines, and indentation. The resulting string is functionally identical but significantly smaller — important for API payloads and storage.</p>
+
+        <h2 id="syntax-highlight">Step 5: Syntax Highlighting</h2>
+        <p>A formatted JSON output is much easier to read with syntax highlighting. Here's a lightweight approach using regex:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// Lightweight JSON syntax highlighter
+function highlightJSON(jsonString) {
+  // Escape HTML entities first
+  let escaped = jsonString
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Apply color classes via regex
+  // Strings: "value"
+  escaped = escaped.replace(
+    /&quot;([^&quot;]*)&quot;(?=:)/g,
+    '&lt;span class="json-key"&gt;"$1"&lt;/span&gt;:'
+  );
+
+  // String values
+  escaped = escaped.replace(
+    /:&quot;([^&quot;]*)&quot;/g,
+    ': &lt;span class="json-string"&gt;"$1"&lt;/span&gt;'
+  );
+
+  // Numbers
+  escaped = escaped.replace(
+    /: (\d+\.?\d*)/g,
+    ': &lt;span class="json-number"&gt;$1&lt;/span&gt;'
+  );
+
+  // Booleans and null
+  escaped = escaped.replace(
+    /: (true|false|null)/g,
+    ': &lt;span class="json-boolean"&gt;$1&lt;/span&gt;'
+  );
+
+  return escaped;
+}
+
+// CSS for the highlight classes:
+// .json-key { color: #8b5cf6; }
+// .json-string { color: #22c55e; }
+// .json-number { color: #3b82f6; }
+// .json-boolean { color: #f59e0b; }</code></pre>
+        <div class="warning">
+            <p>Regex-based highlighting is fast but not perfect. It won't handle nested objects inside strings, escaped quotes, or edge cases. For production use, consider a dedicated library. For a personal tool, this approach is more than adequate.</p>
+        </div>
+
+        <h2 id="error-handling">Step 6: Error Handling and UX</h2>
+        <p>A JSON formatter is only useful if it tells users <em>what went wrong</em> when they paste invalid JSON. Here's the complete event handling:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// DOM references
+const inputEl = document.getElementById('input');
+const outputEl = document.getElementById('output');
+const statusEl = document.getElementById('status');
+
+// Format button handler
+document.getElementById('format-btn').addEventListener('click', () => {
+  const input = inputEl.value.trim();
+  if (!input) {
+    setStatus('Please enter some JSON', 'error');
+    return;
+  }
+
+  const result = parseJSON(input);
+  if (result.success) {
+    outputEl.textContent = JSON.stringify(result.data, null, 2);
+    setStatus('Valid JSON ✓', 'success');
+  } else {
+    outputEl.textContent = '';
+    setStatus(`Error: ${result.error}`, 'error');
+  }
+});
+
+// Minify button handler
+document.getElementById('minify-btn').addEventListener('click', () => {
+  const input = inputEl.value.trim();
+  if (!input) {
+    setStatus('Please enter some JSON', 'error');
+    return;
+  }
+
+  const result = parseJSON(input);
+  if (result.success) {
+    outputEl.textContent = JSON.stringify(result.data);
+    setStatus('Minified ✓', 'success');
+  } else {
+    outputEl.textContent = '';
+    setStatus(`Error: ${result.error}`, 'error');
+  }
+});
+
+// Copy button handler
+document.getElementById('copy-btn').addEventListener('click', async () => {
+  const text = outputEl.textContent;
+  if (!text) {
+    setStatus('Nothing to copy', 'warning');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus('Copied to clipboard!', 'success');
+  } catch (err) {
+    setStatus('Failed to copy', 'error');
+  }
+});
+
+// Clear button handler
+document.getElementById('clear-btn').addEventListener('click', () => {
+  inputEl.value = '';
+  outputEl.textContent = '';
+  setStatus('Cleared', 'info');
+});
+
+// Status helper
+function setStatus(message, type = 'info') {
+  statusEl.textContent = message;
+  statusEl.className = `status status-${type}`;
+}</code></pre>
+        <div class="tip">
+            <p>Good UX in a JSON formatter means:</p>
+            <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
+                <li>Clear error messages that point to the problem</li>
+                <li>Visual feedback on every action (copied, cleared, formatted)</li>
+                <li>Empty state handling (don't crash on empty input)</li>
+                <li>Keyboard shortcuts (Ctrl+Enter to format, Ctrl+C to copy)</li>
+            </ul>
+        </div>
+
+        <h2 id="complete">The Complete Solution</h2>
+        <p>Here's everything assembled into a single, working HTML file:</p>
+        <pre><code class="language-html"><span class="code-label">index.html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;JSON Formatter&lt;/title&gt;
+  &lt;style&gt;
+    /* Paste the CSS here */
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="json-formatter"&gt;
+    &lt;!-- Paste the HTML from Step 1 here --&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    // Paste the JavaScript from Steps 2-6 here
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>The full, working implementation is available as a single HTML file — no build step required. It includes:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li>JSON parsing and validation</li>
+            <li>Beautify with configurable indentation</li>
+            <li>Minify (remove all whitespace)</li>
+            <li>Syntax highlighting for keys, strings, numbers, booleans</li>
+            <li>Copy to clipboard with visual feedback</li>
+            <li>Error messages with parse details</li>
+            <li>Dark theme matching k1r4.space</li>
+        </ul>
+
+        <h2 id="try">Try It Live</h2>
+        <p>The fully working JSON Formatter is live and free to use:</p>
+        <a href="https://k1r4.space/json-formatter.html" class="btn">Open JSON Formatter →</a>
+        <a href="https://k1r4.space/tutorials/json-formatter-tutorial.html" class="btn btn-outline">View This Tutorial</a>
+
+        <div class="tip">
+            <p>All tools on k1r4.space are free, open-source, and require no signup, tracking, or ads. They're built with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools.</p>
+        </div>
+
+        <h2>What We Learned</h2>
+        <p>Building a JSON formatter taught us several important concepts:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li><strong>JSON.parse()</strong> — Parses JSON strings into JavaScript objects. Throws on invalid input — always use try/catch.</li>
+            <li><strong>JSON.stringify()</strong> — Converts objects to JSON strings. Second param is replacer, third is indentation.</li>
+            <li><strong>Beautify = parse + stringify(indent)</strong> — The entire "beautify" operation is just two API calls.</li>
+            <li><strong>Minify = stringify()</strong> — Call without the indentation parameter to get the most compact representation.</li>
+            <li><strong>Error handling is the feature</strong> — A JSON formatter that crashes on bad input is useless. Graceful error messages are what users actually need.</li>
+        </ul>
+
+        <div class="nav-links">
+            <a href="https://k1r4.space" style="padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; color: var(--accent); border: 1px solid var(--accent);">← Back to k1r4.space</a>
+            <span style="color: var(--text-muted); display: flex; align-items: center;">Built with vanilla JS • No frameworks • No build tools</span>
+        </div>
+
+        <footer>
+            <p>Built by <a href="https://k1r4.space">K1R4</a> • All tools free, no tracking, no ads</p>
+            <p style="margin-top: 0.5rem;"><a href="https://k1r4.space/tutorials/css-gradient-generator-tutorial.html">Previous: CSS Gradient Generator Tutorial</a> • <a href="https://k1r4.space/tutorials/kanban-board-tutorial.html">Next: Kanban Board Tutorial</a></p>
+        </footer>
+    </div>
+</body>
+</html>

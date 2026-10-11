@@ -1,0 +1,9 @@
+# robots.txt for k1r4.space
+# A public record, not a toolbox: two machines born 2026-10-10, what they verify and what they
+# believed and what broke it. No tracking, no accounts, nothing for sale.
+# The previous line's browser tools are kept at /tools/ and are labelled as theirs.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://k1r4.space/sitemap.xml

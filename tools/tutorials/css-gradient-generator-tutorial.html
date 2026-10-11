@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Build a CSS Gradient Generator in Vanilla JavaScript</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="description" content="Learn how to build a CSS gradient generator from scratch — pick colors, set angles, and export production-ready CSS gradients with zero dependencies.">
+    <link rel="canonical" href="https://k1r4.space/tutorials/css-gradient-generator-tutorial.html">
+    <meta property="og:title" content="How to Build a CSS Gradient Generator in Vanilla JavaScript">
+    <meta property="og:description" content="Step-by-step guide to building a fully functional CSS gradient generator.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://k1r4.space/tutorials/css-gradient-generator-tutorial.html">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #8b5cf6;
+            --accent-glow: rgba(139, 92, 246, 0.15);
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --pink: #ec4899;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header { text-align: center; padding: 3rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+        h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1rem; }
+        .meta { color: var(--text-muted); font-size: 0.85rem; }
+        .meta span { margin: 0 0.5rem; }
+        h2 { font-size: 1.5rem; margin: 3rem 0 1rem; color: var(--accent); }
+        h3 { font-size: 1.2rem; margin: 2rem 0 0.75rem; color: var(--text); }
+        p { margin-bottom: 1.2rem; color: var(--text-muted); }
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: var(--surface);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #e2e8f0;
+        }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .highlight {
+            border-left: 3px solid var(--accent);
+            padding-left: 1rem;
+            margin: 1.5rem 0;
+        }
+        .highlight p { margin: 0; color: var(--text); }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+        }
+        .btn-outline:hover { background: var(--accent-glow); }
+        .tip {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .tip::before { content: "💡 Tip: "; font-weight: 600; color: var(--green); }
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .warning::before { content: "⚠️ Note: "; font-weight: 600; color: var(--orange); }
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .toc h3 { margin-top: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+        .toc ol { padding-left: 1.5rem; }
+        .toc li { margin: 0.5rem 0; }
+        .toc a { color: var(--accent); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        .tag {
+            display: inline-block;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.2em 0.6em;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0.2rem;
+        }
+        .gradient-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 1rem 0;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.6rem; }
+            .container { padding: 1rem; }
+            pre { padding: 1rem; }
+            pre code { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>How to Build a CSS Gradient Generator</h1>
+            <p class="subtitle">A step-by-step guide to building a fully functional gradient generator — pick colors, set angles, and export production-ready CSS.</p>
+            <p class="meta">
+                <span>~7 min read</span>
+                <span>•</span>
+                <span>October 2026</span>
+            </p>
+            <div style="margin-top: 1rem;">
+                <span class="tag">css</span>
+                <span class="tag">javascript</span>
+                <span class="tag">tutorial</span>
+                <span class="tag">frontend</span>
+            </div>
+        </header>
+
+        <div class="toc">
+            <h3>In This Tutorial</h3>
+            <ol>
+                <li><a href="#why">Why Build a Gradient Generator?</a></li>
+                <li><a href="#html">Step 1: HTML Layout</a></li>
+                <li><a href="#css-style">Step 2: Styling the UI</a></li>
+                <li><a href="#gradient-logic">Step 3: Gradient Logic</a></li>
+                <li><a href="#controls">Step 4: Interactive Controls</a></li>
+                <li><a href="#export">Step 5: Copy to Clipboard</a></li>
+                <li><a href="#complete">The Complete Solution</a></li>
+                <li><a href="#try">Try It Live</a></li>
+            </ol>
+        </div>
+
+        <h2 id="why">Why Build a Gradient Generator?</h2>
+        <p>CSS gradients are one of the most underused tools in a developer's toolkit. A well-crafted gradient can replace images, add depth to flat designs, and create visual hierarchy — all with a few lines of CSS.</p>
+        <p>But writing gradient syntax from memory is error-prone. Do you use <code>linear-gradient(45deg, ...)</code> or <code>linear-gradient(to right, ...)</code>? What's the difference between <code>hsl</code> and <code>hsla</code> color stops?</p>
+        <p>Building a gradient generator teaches you:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li>How CSS gradients work under the hood</li>
+            <li>Event handling for interactive controls</li>
+            <li>String manipulation for code generation</li>
+            <li>The Clipboard API for user interactions</li>
+        </ul>
+        <div class="tip">
+            <p>This tutorial assumes basic familiarity with HTML, CSS, and JavaScript. If you understand what <code>input[type="color"]</code> does and can read a CSS <code>background</code> property, you're ready.</p>
+        </div>
+
+        <h2 id="html">Step 1: The HTML Layout</h2>
+        <p>A gradient generator needs three things: a preview area, color pickers, and a controls section. Here's the structure:</p>
+        <pre><code class="language-html"><span class="code-label">HTML">&lt;div class="generator"&gt;
+  &lt;!-- Preview area --&gt;
+  &lt;div id="preview" class="preview"&gt;&lt;/div&gt;
+
+  &lt;!-- Color controls --&gt;
+  &lt;div class="controls"&gt;
+    &lt;div class="color-group"&gt;
+      &lt;label&gt;Color 1&lt;/label&gt;
+      &lt;input type="color" id="color1" value="#ec4899"&gt;
+    &lt;/div&gt;
+
+    &lt;div class="color-group"&gt;
+      &lt;label&gt;Color 2&lt;/label&gt;
+      &lt;input type="color" id="color2" value="#8b5cf6"&gt;
+    &lt;/div&gt;
+
+    &lt;div class="control-group"&gt;
+      &lt;label&gt;Angle: <span id="angle-value">135</span>&deg;&lt;/label&gt;
+      &lt;input type="range" id="angle" min="0" max="360" value="135"&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Output --&gt;
+  &lt;div class="output"&gt;
+    &lt;code id="css-output"&gt;linear-gradient(135deg, #ec4899, #8b5cf6)&lt;/code&gt;
+    &lt;button id="copy-btn"&gt;Copy CSS&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+        <p>Key structural decisions:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li><code>input type="color"</code> — Native browser color picker. No JS library needed.</li>
+            <li><code>input type="range"</code> — Angle control from 0° to 360°.</li>
+            <li><code>#preview</code> — The large area that shows the live gradient.</li>
+            <li><code>#css-output</code> — The generated CSS string, ready to copy.</li>
+        </ul>
+
+        <h2 id="css-style">Step 2: Styling the UI</h2>
+        <p>The UI needs to be clean and functional. Here's a production-ready stylesheet:</p>
+        <pre><code class="language-css"><span class="code-label">CSS">.generator {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.preview {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #334155;
+  transition: background 0.15s ease;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.color-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.color-group label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.color-group input[type="color"] {
+  width: 100%;
+  height: 48px;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+  padding: 2px;
+}
+
+.control-group {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-group label {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.control-group input[type="range"] {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  background: #334155;
+  border-radius: 4px;
+  outline: none;
+}
+
+.output {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.output code {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  word-break: break-all;
+}
+
+.output button {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.output button:hover {
+  background: #7c3aed;
+}</code></pre>
+        <p>Notice the CSS custom properties approach: use <code>--accent</code>, <code>--surface</code>, etc. for consistent theming across your application.</p>
+
+        <h2 id="gradient-logic">Step 3: The Gradient Logic</h2>
+        <p>This is the core of the generator. We need to read the control values and produce a valid CSS gradient string:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// State object — the single source of truth
+const state = {
+  color1: '#ec4899',
+  color2: '#8b5cf6',
+  angle: 135,
+  type: 'linear'  // 'linear' or 'radial'
+};
+
+// Build the CSS gradient string from state
+function generateGradient() {
+  const { color1, color2, angle, type } = state;
+
+  if (type === 'linear') {
+    return <code>linear-gradient(${angle}deg, ${color1}, ${color2})</code>;
+  } else {
+    return <code>radial-gradient(circle, ${color1}, ${color2})</code>;
+  }
+}
+
+// Apply the gradient to the preview
+function updatePreview() {
+  const gradient = generateGradient();
+  document.getElementById('preview').style.background = gradient;
+  document.getElementById('css-output').textContent = gradient;
+  document.getElementById('angle-value').textContent = angle;
+}
+
+// Initial render
+updatePreview();</code></pre>
+        <div class="highlight">
+            <p><strong>Key insight:</strong> The <code>state</code> object is the single source of truth. Every UI control updates <code>state</code>, and <code>updatePreview()</code> reads from <code>state</code> — never directly from DOM inputs. This is the same pattern used by frameworks like React.</p>
+        </div>
+
+        <h2 id="controls">Step 4: Interactive Controls</h2>
+        <p>Now wire up the inputs to update the state and trigger a preview refresh:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">// Event listeners — connect UI to state
+document.getElementById('color1').addEventListener('input', (e) => {
+  state.color1 = e.target.value;
+  updatePreview();
+});
+
+document.getElementById('color2').addEventListener('input', (e) => {
+  state.color2 = e.target.value;
+  updatePreview();
+});
+
+document.getElementById('angle').addEventListener('input', (e) => {
+  state.angle = parseInt(e.target.value);
+  updatePreview();
+});
+
+// Keyboard shortcut: press 'r' to randomize
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'r' || e.key === 'R') {
+    state.color1 = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    state.color2 = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    state.angle = Math.floor(Math.random() * 360);
+    // Sync UI controls
+    document.getElementById('color1').value = state.color1;
+    document.getElementById('color2').value = state.color2;
+    document.getElementById('angle').value = state.angle;
+    updatePreview();
+  }
+});</code></pre>
+        <p>The <code>input</code> event (not <code>change</code>) fires on every keystroke/drag, giving instant visual feedback. The keyboard shortcut is a nice touch that power users will appreciate.</p>
+        <div class="tip">
+            <p>Randomization is a great feature for gradient generators. It helps users discover color combinations they wouldn't have tried on their own. The trick is converting a random number to a valid hex color: <code>Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')</code>.</p>
+        </div>
+
+        <h2 id="export">Step 5: Copy to Clipboard</h2>
+        <p>Users need an easy way to grab the generated CSS. The Clipboard API makes this straightforward:</p>
+        <pre><code class="language-javascript"><span class="code-label">JavaScript">document.getElementById('copy-btn').addEventListener('click', async () => {
+  const css = document.getElementById('css-output').textContent;
+
+  try {
+    await navigator.clipboard.writeText(css);
+
+    // Visual feedback
+    const btn = document.getElementById('copy-btn');
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = '#22c55e';
+
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.style.background = '';
+    }, 1500);
+  } catch (err) {
+    console.error('Failed to copy:', err);
+    alert('Failed to copy to clipboard');
+  }
+});</code></pre>
+        <p>The async/await pattern with try/catch handles both success and failure gracefully. The visual feedback (button text + color change) confirms the action to the user — this is critical UX design.</p>
+        <div class="warning">
+            <p>The Clipboard API requires a secure context (HTTPS) or localhost. If your page is served over plain HTTP, <code>navigator.clipboard</code> will throw an error. As a fallback, you can use <code>document.execCommand('copy')</code> with a temporary textarea, but this is deprecated.</p>
+        </div>
+
+        <h2 id="complete">The Complete Solution</h2>
+        <p>Here's everything assembled into a single, working HTML file:</p>
+        <pre><code class="language-html"><span class="code-label">index.html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;CSS Gradient Generator&lt;/title&gt;
+  &lt;style&gt;
+    /* Paste the CSS from Step 2 here */
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="generator"&gt;
+    &lt;!-- Paste the HTML from Step 1 here --&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    // Paste the JavaScript from Steps 3-5 here
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <p>The full, working implementation is available as a single HTML file — no build step required. It includes:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li>Two color pickers with live preview</li>
+            <li>Angle slider (0° to 360°)</li>
+            <li>Randomize button (press 'R')</li>
+            <li>One-click copy to clipboard</li>
+            <li>Dark theme matching k1r4.space</li>
+            <li>Fully responsive layout</li>
+        </ul>
+
+        <h2 id="try">Try It Live</h2>
+        <p>The fully working CSS Gradient Generator is live and free to use:</p>
+        <a href="https://k1r4.space/css-gradient-generator.html" class="btn">Open Gradient Generator →</a>
+        <a href="https://k1r4.space/tutorials/css-gradient-generator-tutorial.html" class="btn btn-outline">View This Tutorial</a>
+
+        <div class="tip">
+            <p>All tools on k1r4.space are free, open-source, and require no signup, tracking, or ads. They're built with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools.</p>
+        </div>
+
+        <h2>What We Learned</h2>
+        <p>Building a gradient generator taught us several important concepts:</p>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; color: var(--text-muted);">
+            <li><strong>State-driven UI</strong> — Keep your data in a state object. Controls update state; state drives the UI.</li>
+            <li><strong>CSS gradients</strong> — <code>linear-gradient(angle, color1, color2)</code> is the simplest form. Add more color stops for complex gradients.</li>
+            <li><strong>Native inputs</strong> — <code>input type="color"</code> and <code>input type="range"</code> provide rich UI without any libraries.</li>
+            <li><strong>Clipboard API</strong> — <code>navigator.clipboard.writeText()</code> is the modern way to copy text. Always provide visual feedback.</li>
+            <li><strong>Random hex colors</strong> — <code>Math.random() * 16777215 | 0</code> gives you a random 0-FFFFFF number. Convert with <code>.toString(16).padStart(6, '0')</code>.</li>
+        </ul>
+
+        <div class="nav-links">
+            <a href="https://k1r4.space" style="padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; color: var(--accent); border: 1px solid var(--accent);">← Back to k1r4.space</a>
+            <span style="color: var(--text-muted); display: flex; align-items: center;">Built with vanilla JS • No frameworks • No build tools</span>
+        </div>
+
+        <footer>
+            <p>Built by <a href="https://k1r4.space">K1R4</a> • All tools free, no tracking, no ads</p>
+            <p style="margin-top: 0.5rem;"><a href="https://k1r4.space/tutorials/kanban-board-tutorial.html">Previous: Kanban Board Tutorial</a> • <a href="https://k1r4.space/tutorials/json-formatter-tutorial.html">Next: JSON Formatter Tutorial</a></p>
+        </footer>
+    </div>
+</body>
+</html>

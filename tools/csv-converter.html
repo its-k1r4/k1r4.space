@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSV to JSON Converter — Free, Offline, No Limits</title>
+<meta name="description" content="Convert CSV data to JSON format instantly. Free, open-source, runs entirely in your browser. No file size limits, no uploads.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #1a1a2e; --surface2: #16213e;
+    --border: #2a2a4a; --text: #e2e8f0; --text-dim: #94a3b8;
+    --accent: #3b82f6; --accent-hover: #2563eb;
+    --green: #22c55e; --red: #ef4444; --yellow: #eab308;
+    --radius: 8px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 2rem 1rem;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 2rem; }
+  header h1 {
+    font-size: 2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  header p { color: var(--text-dim); font-size: 0.95rem; }
+  .app { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 768px) { .app { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); display: flex; flex-direction: column;
+  }
+  .panel-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .panel-header h3 { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+  .panel-body {
+    flex: 1; position: relative; min-height: 400px;
+  }
+  textarea {
+    width: 100%; height: 100%; border: none; background: transparent;
+    color: var(--text); font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.85rem; padding: 1rem; resize: none; outline: none;
+    line-height: 1.6;
+  }
+  textarea::placeholder { color: var(--text-dim); opacity: 0.5; }
+  #output { white-space: pre; overflow: auto; }
+  .controls {
+    display: flex; gap: 0.5rem; padding: 1rem;
+    border-top: 1px solid var(--border); flex-wrap: wrap;
+  }
+  button {
+    padding: 0.5rem 1rem; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    border-radius: var(--radius); cursor: pointer;
+    font-size: 0.85rem; font-weight: 500;
+    transition: all 0.15s;
+  }
+  button:hover { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+  button.primary {
+    background: var(--accent); border-color: var(--accent);
+    color: white;
+  }
+  button.primary:hover { background: var(--accent-hover); }
+  .options {
+    display: flex; gap: 1rem; padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border); flex-wrap: wrap;
+    align-items: center;
+  }
+  .option label {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.8rem; color: var(--text-dim); cursor: pointer;
+  }
+  .option input[type="checkbox"] { accent-color: var(--accent); }
+  .option select {
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 0.2rem 0.4rem; font-size: 0.8rem;
+  }
+  .stats {
+    display: flex; gap: 1rem; padding: 0.5rem 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem; color: var(--text-dim);
+  }
+  .stat { padding: 0.2rem 0.5rem; background: var(--surface2); border-radius: 4px; }
+  .error { color: var(--red); font-size: 0.85rem; padding: 0.5rem 1rem; border-top: 1px solid var(--border); }
+  .success { color: var(--green); font-size: 0.85rem; padding: 0.5rem 1rem; border-top: 1px solid var(--border); }
+  .footer {
+    text-align: center; margin-top: 2rem; padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem; color: var(--text-dim);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .sample-btn { font-size: 0.75rem; padding: 0.3rem 0.6rem; }
+  pre { margin: 0; }
+  .json-key { color: #7dd3fc; }
+  .json-string { color: #86efac; }
+  .json-number { color: #fbbf24; }
+  .json-bool { color: #c084fc; }
+  .json-null { color: #94a3b8; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>CSV → JSON Converter</h1>
+    <p>Free, open-source, runs entirely in your browser. No uploads, no limits.</p>
+  </header>
+
+  <div class="app">
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Input (CSV)</h3>
+        <button class="sample-btn" onclick="loadSample()" title="Load sample data">Load Sample</button>
+      </div>
+      <div class="panel-body">
+        <textarea id="input" placeholder="Paste your CSV data here...&#10;&#10;name,age,city&#10;Alice,30,New York&#10;Bob,25,London" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h3>Output (JSON)</h3>
+        <button onclick="copyOutput()" title="Copy to clipboard">📋 Copy</button>
+      </div>
+      <div class="panel-body">
+        <textarea id="output" readonly placeholder="JSON output will appear here..." spellcheck="false"></textarea>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </div>
+
+  <div class="options">
+    <div class="option">
+      <label><input type="checkbox" id="trimSpaces" checked> Trim spaces</label>
+    </div>
+    <div class="option">
+      <label><input type="checkbox" id="emptyAsNull" checked> Empty → null</label>
+    </div>
+    <div class="option">
+      <label>Delimiter:
+        <select id="delimiter">
+          <option value="auto">Auto-detect</option>
+          <option value=",">Comma</option>
+          <option value=";">Semicolon</option>
+          <option value="\t">Tab</option>
+          <option value="|">Pipe</option>
+        </select>
+      </label>
+    </div>
+    <div class="option">
+      <label><input type="checkbox" id="parseNumbers" checked> Parse numbers</label>
+    </div>
+    <div class="option">
+      <label><input type="checkbox" id="parseBooleans" checked> Parse booleans</label>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="primary" onclick="convert()">Convert →</button>
+    <button onclick="clearAll()">Clear</button>
+    <button onclick="downloadJson()">⬇ Download .json</button>
+  </div>
+
+  <div id="message"></div>
+
+  <div class="footer">
+    <p>Built by <a href="https://k1r4.space">K1R4</a> · <a href="https://github.com/its-k1r4/k1r4-tools">Source on GitHub</a> · Free, open source, offline-capable</p>
+  </div>
+</div>
+
+<script>
+const CIRCUMFERENCE = 2 * Math.PI * 90;
+
+function getDelimiter() {
+  const d = document.getElementById('delimiter').value;
+  if (d === 'auto') {
+    const text = document.getElementById('input').value;
+    const firstLine = text.split('\n')[0];
+    if (firstLine.includes('\t')) return '\t';
+    if (firstLine.includes('|')) return '|';
+    if (firstLine.includes(';')) return ';';
+    return ',';
+  }
+  return d === '\\t' ? '\t' : d;
+}
+
+function parseCSV(text, delimiter) {
+  const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return { error: 'Need at least a header row and one data row' };
+  
+  const headers = parseLine(lines[0], delimiter);
+  const results = [];
+  
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseLine(lines[i], delimiter);
+    const obj = {};
+    headers.forEach((h, idx) => {
+      let val = idx < values.length ? values[idx] : '';
+      if (document.getElementById('trimSpaces').checked) val = val.trim();
+      // The three options are independent, each claiming only what it can recognise. They
+      // used to be one if/else chain, so with the defaults (both type options on) numbers
+      // answered first and "Parse booleans" never ran: a true/false column came back as the
+      // strings "true"/"false" (found 2026-10-11 by running it).
+      const t = val.trim();
+      if (val === '' && document.getElementById('emptyAsNull').checked) {
+        obj[h] = null;
+      } else if (document.getElementById('parseNumbers').checked && t !== '' && !isNaN(t)) {
+        obj[h] = Number(t);
+      } else if (document.getElementById('parseBooleans').checked
+                 && (val.toLowerCase() === 'true' || val.toLowerCase() === 'false')) {
+        obj[h] = val.toLowerCase() === 'true';
+      } else {
+        obj[h] = val;
+      }
+    });
+    results.push(obj);
+  }
+  
+  return { data: results };
+}
+
+function parseLine(line, delimiter) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (inQuotes) {
+      if (char === '"') {
+        if (i + 1 < line.length && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += char;
+      }
+    } else {
+      if (char === '"') {
+        inQuotes = true;
+      } else if (char === delimiter) {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+  }
+  result.push(current);
+  return result;
+}
+
+function convert() {
+  const input = document.getElementById('input').value;
+  const msgEl = document.getElementById('message');
+  const outputEl = document.getElementById('output');
+  const statsEl = document.getElementById('stats');
+  
+  if (!input.trim()) {
+    msgEl.innerHTML = '<div class="error">⚠ Please paste CSV data in the input panel.</div>';
+    outputEl.value = '';
+    statsEl.innerHTML = '';
+    return;
+  }
+  
+  const delimiter = getDelimiter();
+  const result = parseCSV(input, delimiter);
+  
+  if (result.error) {
+    msgEl.innerHTML = `<div class="error">⚠ ${result.error}</div>`;
+    outputEl.value = '';
+    statsEl.innerHTML = '';
+    return;
+  }
+  
+  const json = JSON.stringify(result.data, null, 2);
+  outputEl.value = json;
+  
+  const rows = result.data.length;
+  const cols = result.data.length > 0 ? Object.keys(result.data[0]).length : 0;
+  const bytes = new Blob([json]).size;
+  statsEl.innerHTML = `
+    <span class="stat">${rows} rows</span>
+    <span class="stat">${cols} columns</span>
+    <span class="stat">${(bytes/1024).toFixed(1)} KB</span>
+  `;
+  msgEl.innerHTML = '<div class="success">✓ Converted successfully</div>';
+}
+
+function copyOutput() {
+  const output = document.getElementById('output').value;
+  if (!output) return;
+  navigator.clipboard.writeText(output).then(() => {
+    const msgEl = document.getElementById('message');
+    msgEl.innerHTML = '<div class="success">✓ Copied to clipboard</div>';
+    setTimeout(() => msgEl.innerHTML = '', 2000);
+  });
+}
+
+function downloadJson() {
+  const output = document.getElementById('output').value;
+  if (!output) {
+    document.getElementById('message').innerHTML = '<div class="error">⚠ Nothing to download. Convert first.</div>';
+    return;
+  }
+  const blob = new Blob([output], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'data.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearAll() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').value = '';
+  document.getElementById('message').innerHTML = '';
+  document.getElementById('stats').innerHTML = '';
+}
+
+function loadSample() {
+  document.getElementById('input').value = `name,age,city,active,salary
+Alice Johnson,30,New York,true,75000
+Bob Smith,25,London,false,52000
+Carol White,35,Tokyo,true,92000
+David Brown,28,Sydney,true,68000
+Eve Davis,32,Berlin,false,81000`;
+  convert();
+}
+
+// Auto-convert on input
+document.getElementById('input').addEventListener('input', () => {
+  if (document.getElementById('input').value.trim()) convert();
+});
+</script>
+</body>
+</html>
