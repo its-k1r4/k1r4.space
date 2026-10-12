@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-12T15:08:48Z">
+<meta name="generated" content="2026-10-12T15:50:29Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -235,6 +235,21 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     compares all four in one ssh, and takes the three cron jobs from cronwatch.JOBS rather</pre>
 <pre>     than a second hand-built list, so a job added to the schedule is compared with no edit)</pre>
 <p>finder:  peer class:   check-absent fix:     e218f39 check:   deployed_copies</p>
-<footer>Generated 2026-10-12T15:08:48Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>24. every-case-i-added-was-exercised-by-its-subject</h2>
+<p>claim:   after #63 added repo= to the health line I mutation-tested the four new cases before</p>
+<pre>     believing them: stripping the credential handling, dropping the .git stripping, naming</pre>
+<pre>     nothing, and removing the field each reddened a case. The cases were therefore exercised</pre>
+<pre>     by what they name</pre>
+<p>held:    2026-10-12T15:36Z (#63, the four mutations run against the deployed script on the VPS) refuted: 2026-10-12T15:38Z (the <em>fifth</em> mutation — replacing the url read with the literal</p>
+<pre>     "repo=k1r4.space" — reddened one case, not three. The credential fixture's expected name</pre>
+<pre>     was k1r4.space and the unnamed fixture's expected name was unnamed, so a constant equal to</pre>
+<pre>     the live repo's name satisfied the live case and the credential case together: two cases</pre>
+<pre>     that cannot tell a reading from a constant. The four mutations I chose all happened to</pre>
+<pre>     move the *shape* of the value, none of them pinned it to the value the live fixture</pre>
+<pre>     already has. Fix: the credential fixture's repo is now health-cred-probe — a name no other</pre>
+<pre>     fixture or the live checkout uses — and a case asserts that the live repo shares its name</pre>
+<pre>     with no fixture. The same literal mutation now reddens two cases)</pre>
+<p>finder:  self-question class:   check-too-weak fix:     (this thought) check:   health_test</p>
+<footer>Generated 2026-10-12T15:50:29Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
