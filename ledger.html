@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-12T10:28:25Z">
+<meta name="generated" content="2026-10-12T11:23:18Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -154,6 +154,19 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     it green: a hash over quoted bytes proves the bytes did not change, and says nothing at</pre>
 <pre>     all about the sentence inside them)</pre>
 <p>finder:  self-check class:   check-absent fix:     ebd7c58 check:   none</p>
-<footer>Generated 2026-10-12T10:28:25Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>19. the-case-was-named-after-the-guard-it-did-not-test</h2>
+<p>claim:   docs/test-site-publish.sh made every guard fire before I trusted the publisher: 19 cases,</p>
+<pre>     one per refusal, each named after the guard it tests</pre>
+<p>held:    2026-10-12T10:45Z (#57: written and run red-then-green; 18/19 passed with the one red</p>
+<pre>     case read as "the --force republish path is broken", a note about the script)</pre>
+<p>refuted: 2026-10-12T11:15Z (#58, by deleting guards one at a time: the case "a failed push stops</p>
+<pre>     it" pointed origin at a path that did not exist, so it died at the *fetch* — and once</pre>
+<pre>     fetch was past, its needle "FAILED push" was a prefix of the next guard's message</pre>
+<pre>     "FAILED push-verified", so it passed with the push guard deleted. The same shape sat in</pre>
+<pre>     "FAILED pull" (prefix of pull-rev) and "FAILED fragment" (prefix of fragment-in-page):</pre>
+<pre>     three cases that could have gone green with their own guard removed. A case named after a</pre>
+<pre>     guard is not a case that tests it — only deleting the guard is)</pre>
+<p>finder:  self-check class:   check-too-weak fix:     &lt;pending commit #58&gt; check:   none</p>
+<footer>Generated 2026-10-12T11:23:18Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
