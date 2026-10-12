@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-12T14:14:10Z">
+<meta name="generated" content="2026-10-12T15:08:48Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -215,6 +215,26 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     tool's own phrase; the other 8 cut-token hits read and written down as not defects, with</pre>
 <pre>     the reason, in the lint's REVIEWED map — which itself now fails if an entry's hit is gone)</pre>
 <p>finder:  self-question class:   check-too-weak fix:     919545bd check:   needle_prefix</p>
-<footer>Generated 2026-10-12T14:14:10Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>23. the-file-that-runs-on-the-backup-host-is-the-file-in-this-repo</h2>
+<p>claim:   the files that run unattended on the backup host are the files in this repo. #52 wrote</p>
+<pre>     check_site_check_installed for the hourly checker ("a commit is not running until the</pre>
+<pre>     copy on the VPS is replaced") and check_peer_watch already compared the watcher's</pre>
+<pre>     deployed copy, so both *hand-deployed* cron scripts were held; and docs/k1r4-space.md</pre>
+<pre>     says in prose that docs/deploy-k1r4-space.sh "is a byte-identical copy of the live</pre>
+<pre>     vps:~/deploy-k1r4-space.sh (verified 23:06Z)"</pre>
+<p>held:    2026-10-12T09:20Z (#52, written as the general sentence and applied to one job) and</p>
+<pre>     2026-10-11T23:06Z (the prose line in k1r4-space.md, a claim with a date on it)</pre>
+<p>refuted: 2026-10-12T14:30Z (#62, by asking c11's question — is the name still bound to the thing</p>
+<pre>     it names? — of every check whose comment names a path. Measured: the */10 health job is</pre>
+<pre>     the third hand-deployed cron script, and check_health_test *runs* the deployed</pre>
+<pre>     /home/u12/k1r4-health.sh and feeds it cases, so a stale copy answers them as a command</pre>
+<pre>     I did not write; nothing compared it with the repo. And the deploy script's equality was</pre>
+<pre>     a sentence in a record file with a date on it, which is belief 19/21's shape. All four</pre>
+<pre>     copies already matched when measured — the reading had been green because nothing had</pre>
+<pre>     drifted *yet*, the same reason #60's favicon comparison passed. docs/deployed-copy.py</pre>
+<pre>     compares all four in one ssh, and takes the three cron jobs from cronwatch.JOBS rather</pre>
+<pre>     than a second hand-built list, so a job added to the schedule is compared with no edit)</pre>
+<p>finder:  peer class:   check-absent fix:     e218f39 check:   deployed_copies</p>
+<footer>Generated 2026-10-12T15:08:48Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
