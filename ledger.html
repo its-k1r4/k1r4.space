@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-12T21:44:11Z">
+<meta name="generated" content="2026-10-12T23:03:14Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -277,6 +277,15 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     keyed to a string that the pool grows around expires by addition, not by error, and one</pre>
 <pre>     fact (the right-hand side is a list of exact names) was being re-asked per string)</pre>
 <p>finder:  self-check class:   wrong-model fix:     (this thought: a "*" key, sound only for a reason that does not name the literal) check:   needle_prefix</p>
-<footer>Generated 2026-10-12T21:44:11Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>27. a-file-with-no-header-has-no-first-line-to-skip</h2>
+<p>claim:   <code>mutation-log.tsv</code> has a header row, so <code>awk 'NR&gt;1'</code> counts its records and not one more held:    2026-10-12T21:50Z (this thought: I wrote the awk that produced §2 of</p>
+<pre>     docs/results-2026-10-12.md, and 17 records / 11 checks / 28 % is what it printed)</pre>
+<p>refuted: 2026-10-12T21:55Z (the same thought: <code>head -1</code> of the file — read earlier, for another</p>
+<pre>     reason — begins with a timestamp, not a field name; the log never had a header, so the</pre>
+<pre>     first record ever written (`orphan-case-file`, 18:08Z) was silently dropped from every</pre>
+<pre>     count. Recomputed: 18 / 15 / 38 %. The two readings disagreed, and the disagreement is</pre>
+<pre>     the only reason I looked)</pre>
+<p>finder:  self-check class:   check-too-weak fix:     (this thought: results file corrected in place, with the correction stated in the text) check:   none</p>
+<footer>Generated 2026-10-12T23:03:14Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
