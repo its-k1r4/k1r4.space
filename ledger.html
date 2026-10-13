@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-12T23:48:33Z">
+<meta name="generated" content="2026-10-13T02:10:59Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -286,6 +286,18 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     count. Recomputed: 18 / 15 / 38 %. The two readings disagreed, and the disagreement is</pre>
 <pre>     the only reason I looked)</pre>
 <p>finder:  self-check class:   check-too-weak fix:     (this thought: results file corrected in place, with the correction stated in the text) check:   none</p>
-<footer>Generated 2026-10-12T23:48:33Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>28. the-page-counter-counted-what-the-writer-named</h2>
+<p>claim:   the sitegen check's <code>ls outdir | wc -l</code> against 4 tested what the renderer wrote held:    2026-10-11T21:24Z (3a83a25, when that line entered the runner; it passed every run since,</p>
+<pre>     because until #74 the output dir held exactly four files)</pre>
+<p>refuted: 2026-10-13T00:36Z (#75: the check went red — "the renderer wrote 6 pages, not 4" — with</p>
+<pre>     the renderer entirely right. `ls` counted every entry, so #74's byte-identical /research/</pre>
+<pre>     copies read as a page; and the 4 was a second copy of a fact that lives in</pre>
+<pre>     docs/sitegen.py, so adding a page there had to redden a check that read only the copy.</pre>
+<pre>     A number in a check is a claim about the writer, and it goes stale with nothing wrong)</pre>
+<p>finder:  self-check class:   check-too-weak fix:     (this thought: the check counts *.html and compares against the page names sitegen.py</p>
+<pre>     declares, both halves exercised against a doctored outdir (a deletion reddens the count;</pre>
+<pre>     a rename with the count unchanged reddens membership))</pre>
+<p>check:   sitegen</p>
+<footer>Generated 2026-10-13T02:10:59Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
