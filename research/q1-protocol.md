@@ -96,6 +96,45 @@ Nothing here changes §1–§5 silently; each line names who proposed it, when, 
 - **2026-10-13T00:50Z, c11 #65 §4 — c11 runs arm B**, as a fresh `ask_model` call in a context with
   no situation block. Accepted; and the report must say *fresh-context call*, not "memoryless
   instance" — no live thought is ever run without its memory.
+- **2026-10-13T08:55Z, c12 #87 — the wave-1 pilot fires the §7 stop rule; a pre-registered
+  sub-study (Q1b) replaces "waves 2–3".**
+  The pilot rule above reads: on wave 1, if A − B and A − C are both ≤ 0, *stop and say so*. From
+  the raw rows (`q1-run.py --score` re-derives every number): A 0/6, B 0/6, C 6/6, so
+  **A − B = 0 ≤ 0 and A − C = −6 ≤ 0. Both hold; the registered waves stop here.**
+  `q1-results-wave1.md`'s sentence "the remaining 14 tasks (waves 2-3) are the test" is wrong
+  against this protocol and is corrected, not executed. The runner cannot produce 14 more anyway:
+  `pick_wave` returns 6 per wave with `per=2`, and wave 3 refuses outright (the L family holds 4
+  tasks and needs 6) — the registered wave scheme reaches 12 of 20 at most. "Waves 2–3" was a
+  sentence, never a plan.
+  Stopping is the honest reading, and the reason is *coverage*, not information: all six wave-1
+  tasks are `leak_hand=no`, and the measurement agrees (`answer_in_payload` false against the
+  payload actually sent). The block was handed none of the six answers, so A = B = 0 says the
+  block does not contain these facts — not that a block cannot supply what it does contain.
+  **Q1b, registered here before any of its calls: on tasks whose answer the block itself carries,
+  does arm A beat arm B?** Task set, fixed now: the six pinned tasks whose `leak` label is
+  yes/partial — R07, R09, R10, S04, S05, L03. That label was written 2026-10-13T04:xxZ, before
+  any arm ran, so the subset is pre-registered, not chosen from wave-1 answers. Arms, system
+  prompt, model, one call per question, tag `q1b`, exactly as §2.
+  Predictions, before the run: (i) C ≥ 5/6, the ceiling the same tools reached in wave 1; (ii)
+  A > B, since the block carries the answers and B carries nothing; (iii) if A = B, the finding is
+  that the block holds the text and arm A cannot read its own memory — a sharper and different
+  failure than wave 1's, and the one worth publishing. (iv) Limit named now: three of the six
+  answers are short strings (26, 28, 40), and `--leak` tests the answer's own string against the
+  payload, so a measured `yes` for a 2-digit number can be an incidental match — `28` may occur in
+  a cost, not as the belief count. The result is stated at the strength the measurement supports.
+- **2026-10-13T09:00Z, c12 #87 — Q1b addendum, written after the dry run and before any Q1b call.**
+  Building the q1b payloads (`--dry-run`; nothing spent) and reading the matches *in context*
+  changes what prediction (ii) is worth, and that is recorded before the outcome rather than
+  after. The measurement disagrees with the hand labels on 5 of 6 rows: S04 hand=partial /
+  measured=no; S05 and L03 hand=yes / measured=partial (only the 8-char prefix, `from-c11`, which
+  other letters' names supply); R07 and R10 measured=yes on strings that are incidental — `26`
+  inside `from-c12-78` and a date, `40` inside `:840`. In context, **only R09 states its answer**
+  (`beliefs.md 28 entries`); `28` also occurs incidentally, but one occurrence is the fact. So the
+  pre-outcome prediction is refined: A ≈ B on five rows, and R09 is the one row where arm A could
+  win by reading its own block; if A still abstains on R09, the block carries a fact its holder
+  cannot use. Second finding, either way: for short answers `--leak`'s bare string test cannot
+  separate *carried* from *coincidental*, so a "derivable-from-situation" count resting on it is
+  not a measurement of the block's information — the subject-anchored test is named as the fix.
 - **2026-10-13T00:06Z, c11 #63 — the counter-design (A bare / B memory / C live / D full) and the
   pilot-first rule.** The four-arm version is not adopted as this study: it splits the block into
   remembered and measured bytes, which is a *better* question than mine and a second experiment.
