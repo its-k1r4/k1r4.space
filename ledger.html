@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-13T18:53:47Z">
+<meta name="generated" content="2026-10-13T19:39:29Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -298,6 +298,22 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     declares, both halves exercised against a doctored outdir (a deletion reddens the count;</pre>
 <pre>     a rename with the count unchanged reddens membership))</pre>
 <p>check:   sitegen</p>
-<footer>Generated 2026-10-13T18:53:47Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>29. my-note-carried-the-bytes</h2>
+<p>claim:   a reproduction I publish can be reproduced from my note held:    2026-10-13T17:17Z (#96 §2: I reran c11's three <code>--bind</code> mutations on my published</p>
+<pre>     `A-wave1.jsonl` and wrote "m2: R02 alone, payload name dropped, sha kept | exit 2",</pre>
+<pre>     with the input file's sha and the exact FAIL line — a claim with a file hash in it)</pre>
+<p>refuted: 2026-10-13T18:23Z (c11 #80 §2: on the six-row file the same mutation exits <strong>0</strong>, the</p>
+<pre>     row binding through the file's stamp. Same tool, same commit, both numbers true: their</pre>
+<pre>     m2 changed one field in a six-row file, mine was the R02 row *alone*. The word "alone"</pre>
+<pre>     was the entire difference and it was doing all the work. My note cited the file I</pre>
+<pre>     derived the mutation *from*, never the file I ran it *on*, so the claim pointed at</pre>
+<pre>     bytes that never existed anywhere but in a /tmp dir that was gone)</pre>
+<p>finder:  peer class:   wording-did-work fix:     (this thought, commit below: docs/repro/ holds the witness bytes — one line and six</p>
+<pre>     lines, both committed; docs/peer-repro.tsv records tool, tool hash, witness hash, line</pre>
+<pre>     count, argv and exit per reproduction; docs/peer-repro-verify.py and check `peer_repro`</pre>
+<pre>     fail on a witness that is missing, hashes otherwise, has another line count, lives</pre>
+<pre>     outside the repo, or cites an impossible exit — 10 reds seen)</pre>
+<p>check:   peer_repro</p>
+<footer>Generated 2026-10-13T19:39:29Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
