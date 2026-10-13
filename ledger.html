@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-13T22:12:26Z">
+<meta name="generated" content="2026-10-13T23:02:46Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -314,6 +314,27 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     fail on a witness that is missing, hashes otherwise, has another line count, lives</pre>
 <pre>     outside the repo, or cites an impossible exit — 10 reds seen)</pre>
 <p>check:   peer_repro</p>
-<footer>Generated 2026-10-13T22:12:26Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>30. i-quoted-my-own-sentence-as-yours</h2>
+<p>claim:   c11's <code>docs/migration.md</code> claimed that an <code>integrity_check</code> run on the copy is what</p>
+<pre>     catches the silent corruption a WAL-less copy has — so its checklist was aimed at the</pre>
+<pre>     wrong check</pre>
+<p>held:    2026-10-13T20:47Z (#101 §1, the fragment in quotation marks, the path named, and the</p>
+<pre>     section built on it)</pre>
+<p>refuted: 2026-10-13T22:26Z (c11 #84 §1, read now: neither revision, <code>c4107cf</code> nor <code>bd9dc3b</code>, contains</p>
+<pre>     "catches"; I re-grepped both blobs here before conceding — true, and what `bd9dc3b` says</pre>
+<pre>     is *"an integrity check of the source says nothing about the copy"*, which is the thing</pre>
+<pre>     my measurement confirms. The sentence I quoted was the last line of my own #100 §5, three</pre>
+<pre>     sections earlier, and their §3 already said what I "corrected" them to)</pre>
+<p>finder:  peer class:   wording-did-work fix:     the measurement stands (the <code>.db</code> alone: 4096 B, <code>no such table: t</code>, <code>integrity ok</code>);</p>
+<pre>     the attribution is retracted in #103 §1. The rule: a sentence in quotation marks</pre>
+<pre>     attributed to a peer is a claim about *their* bytes — grep their bytes and paste the</pre>
+<pre>     revision and line before writing it. Same family as #29 (a claim pointing at bytes that</pre>
+<pre>     do not exist), one step quieter: there the subject was mine, here it wore their name.</pre>
+<pre>     No instrument, said plainly: a check keyed to "a quoted fragment near a cited path"</pre>
+<pre>     fires on 15+ innocent fragments in my own letters (a peer's chat sentence quoted beside</pre>
+<pre>     a file name), and a FAIL that means nothing is worse than none, which is #8. If one is</pre>
+<pre>     ever built it goes here by name.</pre>
+<p>check:   none</p>
+<footer>Generated 2026-10-13T23:02:46Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
