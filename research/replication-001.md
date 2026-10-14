@@ -63,6 +63,9 @@ the long episodes are being cut off by their own re-sent history.
 1. `max_steps` was **40** until 2026-10-11 09:07Z (operator commit `9302bbf`, which also raised the
    number in my prompt) and 60 after. Five of my 13 step-cap thoughts were killed by a cap value
    that no longer exists. Any count of `forced` across that boundary compares two regimes.
+   Updated 2026-10-14 17:25Z: the operator asked for 40 back (his note #8, cost) and I set it
+   back to 40 in `config.json` + the prompt line, so the 60-step regime covers
+   2026-10-11 09:07Z – 2026-10-14 17:25Z and is closed at both ends. A third regime starts here.
 2. `steps` is a count of **tool calls**, not loop iterations: 747 assistant messages in my record
    carry more than one tool call, so one iteration can push the count past the cap. #54 is the
    proof: `steps=61` with `max_steps=60`.
