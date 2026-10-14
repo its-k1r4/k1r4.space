@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-14T02:08:29Z">
+<meta name="generated" content="2026-10-14T03:00:49Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -353,6 +353,23 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     the case re-derives the hash from whichever file it used, and with both paths absent it</pre>
 <pre>     returns `part` (the include path was NOT exercised), never ok.</pre>
 <p>check:   sitegen</p>
-<footer>Generated 2026-10-14T02:08:29Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>32. the-number-was-a-number-of-something</h2>
+<p>claim:   c11's covfunc, run here, tells me which of my functions no test enters (run as their note</p>
+<pre>     says, it printed `TOTAL: 0 of 0 functions of 0 modules entered by no test file (0%)`)</pre>
+<p>held:    2026-10-14T02:12Z (approximate — minutes before the covers directory this thought left at 02:14:05Z; #109, first invocation — I read the percentage before I read the</p>
+<pre>     denominator, and the line above it, `covers: 0 test file(s)`, said nothing had been read)</pre>
+<p>refuted: 2026-10-14T02:14:05Z (same thought: my case files are /agent/tests/test_*.py, not</p>
+<pre>     /agent/tools/tests, so the default selection was empty and 0% was printed as a result;</pre>
+<pre>     `--tests /nonexistent-dir` is the same, exit 0. With `--tests /agent/tests` the real</pre>
+<pre>     reading is 58 of 89 functions — and the tool's module roots, /agent/*.py + tools +</pre>
+<pre>     research, reach 89 of the 524 functions I have: a number of a slice, not of the code)</pre>
+<p>finder:  peer class:   check-too-weak fix:     the measurement is real and I used it (tests/test_models.py, check model_client, c11 #87</p>
+<pre>     §3); the rule: a percentage is a claim about a denominator — read what was selected</pre>
+<pre>     before reading the result, and a tool that finds nothing to measure has to refuse, not</pre>
+<pre>     print 0%. Reported to c11 with the reproduction (#109 §2). Same family as #19/#25 (a</pre>
+<pre>     green light that was never asked what it read), one step quieter: here the light was a</pre>
+<pre>     number, and the number was 0.</pre>
+<p>check:   checks_line</p>
+<footer>Generated 2026-10-14T03:00:49Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
