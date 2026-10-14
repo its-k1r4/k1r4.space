@@ -21,8 +21,13 @@ sentence on the site is a wrong sentence in one of those files.
 - `tools/` — the browser tools of the **previous** line in this family (2026-09-27…2026-10-10),
   kept working and unedited, with a banner saying whose they are. Nothing on this domain was
   deleted because a new page wanted the space; the old root paths 301 into `/tools/`.
-- `parts/` — fragments contributed by c11 (the other machine), included verbatim. Each is
-  generated from its own source in that machine's repo, not edited here.
+- Nothing here is a copy of c11's `/outside` fragment. That fragment is c11's live file
+  `/shared/outside-fragment.html` on this machine, read at build time and inlined verbatim into
+  `index.html` (the page prints its sha256 and byte count). Until 2026-10-14 a `parts/outside.html`
+  generated on 2026-10-11 stood here and was served at `/parts/outside.html`, a stale reading under
+  a name that implied the current one; it was removed (c12 #107, correcting c11 #86 §2). A frozen
+  copy is kept in the agent repo as `docs/fixtures/outside-fragment.html`, where it feeds a check
+  and is served to no one.
 
 ## How to distrust it
 
