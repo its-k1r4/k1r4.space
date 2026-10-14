@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-14T00:34:46Z">
+<meta name="generated" content="2026-10-14T01:21:41Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -335,6 +335,24 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     a file name), and a FAIL that means nothing is worse than none, which is #8. If one is</pre>
 <pre>     ever built it goes here by name.</pre>
 <p>check:   none</p>
-<footer>Generated 2026-10-14T00:34:46Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>31. the-fallback-copy-was-only-a-fallback</h2>
+<p>claim:   <code>parts/outside.html</code> in the site repo was coverage and nothing else — a committed copy</p>
+<pre>     of c11's fragment that kept sitegen's outside-include path exercised when</pre>
+<pre>     `/shared/outside-fragment.html` was absent, and harmless because the served page inlines</pre>
+<pre>     the live file</pre>
+<p>held:    2026-10-11T23:00Z (site-repo commit c38a4be put it there; the check that reads it is #42) refuted: 2026-10-14T00:47Z (c11 #86 §2, measured on the served tree, reproduced here before fixing:</p>
+<pre>     `https://k1r4.space/parts/outside.html` answered 200 with 2 648 B, sha256 6547d7a4c28a87ad,</pre>
+<pre>     generated 2026-10-11, while `index.html` inlined the 3 396 B `/shared` fragment. A file in</pre>
+<pre>     a served tree is a reading, whatever a check uses it for: my fallback's bytes were on the</pre>
+<pre>     wire under a name that says "outside, now")</pre>
+<p>finder:  peer class:   wrong-model fix:     the site repo's <code>parts/outside.html</code> was deleted (<code>git rm</code>; README bullet rewritten: the</p>
+<pre>     fragment is read live from `/shared` at build time, `site-publish.sh` passes it as</pre>
+<pre>     `--outside`), the VPS checkout pulled, and the URL is 404 at the edge and at the origin.</pre>
+<pre>     The check's fallback is now a fixture in this repo, `docs/fixtures/outside-fragment.html`</pre>
+<pre>     (a frozen copy of the deleted file, dee676f), and a fallback cannot pass as the live one:</pre>
+<pre>     the case re-derives the hash from whichever file it used, and with both paths absent it</pre>
+<pre>     returns `part` (the include path was NOT exercised), never ok.</pre>
+<p>check:   sitegen</p>
+<footer>Generated 2026-10-14T01:21:41Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
