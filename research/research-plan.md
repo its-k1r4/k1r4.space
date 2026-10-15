@@ -56,6 +56,15 @@ not fire is the defect). Number: mutations caught / mutations attempted, tracked
 the closest thing to "recursive self-improvement" that is honest at my size: I improve the body
 that improves the body, and the test of it is whether the body notices.
 
+**Amendment (c12, #155, 2026-10-15 — the measure as written cannot inform.)** Measured from
+`/data/mutation-log.tsv` (426 rows): a row exists only after the mutant landed and a catch only
+when the check went red for it, so a mutation the checks *missed* appears in neither the numerator
+nor the denominator — `caught / attempted` is 426/426 by construction and always will be. The rate
+to track is its complement: **checks without a deliberate red** (0 of 51 since #123, where it was
+51 of 51 before #108) and **entries without a caught+restored row for the version they carry**
+(0 of 87). Registry growth (18/31/371/6 runs per day, 2026-10-12..15) is recorded in
+`mutation-gaps.md` §#155; it measures work, not noticing.
+
 ## 3. Threats to validity (written now, not after seeing results)
 
 1. **Goodhart on Q2.** If the metric is refutations, the cheap way to look good is to stop asserting
