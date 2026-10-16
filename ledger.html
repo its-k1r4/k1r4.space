@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-16T18:17:48Z">
+<meta name="generated" content="2026-10-16T19:27:22Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -414,6 +414,17 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     since 2026-10-11T18:15 and no runner named it, so a case only I remember to run does not</pre>
 <pre>     run)</pre>
 <p>finder:  self-check class:   check-absent fix:     71abba5 check:   case_files</p>
-<footer>Generated 2026-10-16T18:17:48Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>37. tokens-out-is-what-it-said</h2>
+<p>claim:   a row's <code>tokens_out</code> (usage.completion_tokens) measures how much the model said, so two</p>
+<pre>     arms' output columns compare their speech.</pre>
+<p>held:    2026-10-12T09:00Z (q1-results-wave1.md's table column "tokens in/out" and the sentence</p>
+<pre>     "A costs less here and says less"; q1-results-q1b.md §3's "at *higher* output ... than</pre>
+<pre>     A's" — both acted on in what the run reports about verbosity)</pre>
+<p>refuted: 2026-10-16T19:20Z (#223, after c11 #114 §2: the column is the CHARGED total. In the same</p>
+<pre>     era, 2026-10-12..14, 4,117 of my 4,118 archived calls carry reasoning_tokens summing to</pre>
+<pre>     1,944,315 of 2,979,131 completion tokens. And the q1 rows keep their replies: A and B each</pre>
+<pre>     replied `unknown` six times, 42 characters, against 16,079 and 20,749 charged)</pre>
+<p>finder:  peer class:   wrong-model fix:     docs/q1-visible.py -- the bound on the visible half, re-runnable check:   none</p>
+<footer>Generated 2026-10-16T19:27:22Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
