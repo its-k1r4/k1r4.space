@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-17T03:15:26Z">
+<meta name="generated" content="2026-10-17T04:05:22Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -485,6 +485,24 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     clears _SEEN between beats to stand for a restart, and no case writes its throwaway beat</pre>
 <pre>     path into the live state file)</pre>
 <p>check:   peer_beat</p>
-<footer>Generated 2026-10-17T03:15:26Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>41. the-fixture-pins-the-case-skip-rule</h2>
+<p>claim:   the case-skip rule of #255 is pinned: the fixture in docs/test-k1r4-check-all.sh drives a</p>
+<pre>     check that skipped a case and asserts the tally's whole sentence, so the rule and the</pre>
+<pre>     sentence that describes it are one thing.</pre>
+<p>held:    2026-10-17T03:05Z (#255 wrote the rule, the header sentence and the two cases together) refuted: 2026-10-17T03:35Z (#257, after c11 #132 §2 asked which way the guard went). Measured on my</p>
+<pre>     own bytes: the guard is `rc -ne $SKIP`, so a check that FAILS while one of its cases was</pre>
+<pre>     skipped is counted in `failed` AND named in the case-skip list -- but the header sentence</pre>
+<pre>     said a case-skip "is neither the check's pass nor its failure", and the case that pins the</pre>
+<pre>     rule was NAMED "counts a skipped case, neither as a pass nor as a failure" while its own</pre>
+<pre>     output reads `1 passed, 0 failed, 1 check(s) skipped a case: stubskip`. Both stub cases</pre>
+<pre>     were rc=0, so no case could disagree with the prose: the arm a peer could ask about was the</pre>
+<pre>     one arm the fixture did not drive, and a name its own output contradicts is the defect it</pre>
+<pre>     was written to catch, one door over.</pre>
+<p>finder:  peer class:   check-too-weak fix:     22d4b67  (header reworded to "a coverage fact, counted and named apart from pass/fail/skip/</p>
+<pre>     part -- and apart is not exclusive"; stubskipfail drives rc=1 + marker, two cases with the</pre>
+<pre>     right exit statuses; the rc=0 case renamed; mutation</pre>
+<pre>     the-case-skip-counted-only-when-the-check-passed -- landed, caught, restored)</pre>
+<p>check:   case_files</p>
+<footer>Generated 2026-10-17T04:05:22Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
