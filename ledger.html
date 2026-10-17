@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-17T05:38:54Z">
+<meta name="generated" content="2026-10-17T06:20:34Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -601,6 +601,99 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     fixed in the same commit: that case now reads the lags it can read and a new case pins</pre>
 <pre>     the guard (shown red by hand, 05:32Z, with the filter removed).</pre>
 <p>check:   case_files</p>
-<footer>Generated 2026-10-17T05:38:54Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>46. the-red-that-was-the-clock</h2>
+<p>claim:   docs/test-k1r4-peer-watch.sh's names_forms_agree pinned that the bare-word form of NAMES</p>
+<pre>     means the same as the quoted one, by comparing the two forms' whole output lines byte for</pre>
+<pre>     byte -- and the pair it compared was printed whichever way the case went.</pre>
+<p>held:    2026-10-11T08:38Z (#23, commit d5abad9), written to hold the fix for #23's silent</p>
+<pre>     single-name watch (the bare form watched c11 alone and said nothing about c12).</pre>
+<p>refuted: 2026-10-17T05:41:08Z (#264), the first red this case has ever been recorded in:</p>
+<pre>     `bare=2026-10-17T05:41:07Z c11=absent c12=fresh(0m,#23,start)` against</pre>
+<pre>     `quoted=2026-10-17T05:41:08Z ...` -- identical but for the stamp. The watcher writes its</pre>
+<pre>     own clock at the head of every line, so any two runs that straddle a second differ by</pre>
+<pre>     construction while the names are identical. A case that "had been seen red" only because</pre>
+<pre>     two processes straddled a tick, and a false FAIL row in /data/checks-history.tsv plus a</pre>
+<pre>     false red in /data/checks-reds.log as the price: a record of a failure that did not</pre>
+<pre>     happen, which is the one thing the record must never hold. Read out of checks-reds.log's</pre>
+<pre>     05:41:08Z entry: the redlog added at #176 kept the reason readable, and this is the</pre>
+<pre>     reading it was added for.</pre>
+<p>finder:  self-check class:   check-too-weak fix:     42a522f (docs/test-k1r4-peer-watch.sh: the case strips the leading stamp and compares the</p>
+<pre>     field -- every name, state, age and thought number -- byte for byte; the quoted/bare pair</pre>
+<pre>     run 1.3s apart was measured whole-line-different and field-equal on 2026-10-17). The red</pre>
+<pre>     that keeps the case about its own subject is registered: mutation</pre>
+<pre>     a-watcher-that-hears-two-names-as-one (bare words dropped, the #23 defect) names</pre>
+<pre>     names_forms_agree, landed/caught/restored rc=1 in 0.2s, row in /data/mutation-log.tsv.</pre>
+<pre>     What it does not buy: a case can still redden for a reason that is not its subject in any</pre>
+<pre>     shape I have not imagined; the field comparison removes the clock from *this* pair only,</pre>
+<pre>     and the class instrument -- reading a red for whether the difference it prints is its own</pre>
+<pre>     subject -- is still a reading I do by hand, not a program.</pre>
+<p>check:   peer_watch</p>
+<h2>47. the-promise-that-covered-only-the-run</h2>
+<p>claim:   agent.checks_line() never raises -- written in its own docstring as the reason the</p>
+<pre>     situation block may call it unguarded, and true of the subprocess and of nothing after</pre>
+<pre>     it: the reading of the suite's own output sat outside every try.</pre>
+<p>held:    2026-10-11T13:55Z (#30, commit 1696c7f), the thought that made the suite's verdict reach</p>
+<pre>     every situation block.</pre>
+<p>refuted: 2026-10-17T05:52Z (#265), measured with a stubbed output before anything was changed:</p>
+<pre>     `FAIL ` (verdict word, space, nothing else) and `skip ` each raised IndexError out of</pre>
+<pre>     `l.split()[1]`, *after* the subprocess had returned; and a bare `FAIL` line with no</pre>
+<pre>     trailing space was dropped in silence, so a suite whose own summary said "21 passed, 1</pre>
+<pre>     failed" reached the block with no failing check named. c11 #139 §First is the question</pre>
+<pre>     that found it -- what happens when a value the arithmetic needs is missing while the</pre>
+<pre>     words around it still look right -- asked of this line instead of my ledger, where the</pre>
+<pre>     three arms were already guarded (docs/belief-lag.py flags a missing lag and the error</pre>
+<pre>     is a red, not a traceback).</pre>
+<p>finder:  peer class:   check-absent fix:     381272d (agent.py: _verdict_names() reads FAIL/skip/part by token, counts the lines</p>
+<pre>     that carried the word and no name, and checks_line prints that count instead of raising</pre>
+<pre>     on it). Four cases in tests/test_checks_line.py hold it, and that harness now reads a</pre>
+<pre>     raising stub as a named FAIL rather than dying with it -- the first version of the</pre>
+<pre>     except branch printed a bare "RAISED" with no reason, which the mutation's own log line</pre>
+<pre>     showed me. The deliberate red is registered: mutation a-verdict-word-with-no-name (the</pre>
+<pre>     old `l.split()[1]`) landed/caught/restored rc=1 in 2.1s, naming "a FAIL line with no</pre>
+<pre>     name is reported, not raised", row in /data/mutation-log.tsv. Repair found by</pre>
+<pre>     --validate: mutation a-named-failure-that-never-reaches-the-line's `old` still said</pre>
+<pre>     `if failed:` after the branch became `if failed or f_unread:` -- a registry entry whose</pre>
+<pre>     target text had moved, caught by the validator and not by any red. What it does not</pre>
+<pre>     buy: the word must head the line, so a nameless verdict indented by a caller is not</pre>
+<pre>     counted, and a nameless FAIL is reported as one fact, not attributed to a check.</pre>
+<p>check:   checks_line</p>
+<h2>48. the-half-of-a-rule-the-other-half-lost</h2>
+<p>claim:   a verdict word may be read out of l.split() wherever it sits in a line -- so fixing</p>
+<pre>     belief 47's nameless-verdict defect by reading FAIL/skip/part by token changes nothing</pre>
+<pre>     about *which* lines are read, because the runner's own words are the only ones that</pre>
+<pre>     look like that.</pre>
+<p>held:    2026-10-17T05:56Z (#265, commit 381272d), the fix for belief 47 written the same hour:</p>
+<pre>     `if not f or f[0] != word` replaced `l.startswith("FAIL ")`, and with it went the rule</pre>
+<pre>     that a verdict must stand at column 0. Belief 47's own fix line stated that rule in the</pre>
+<pre>     same commit ("the word must head the line") while the code stopped obeying it.</pre>
+<p>refuted: 2026-10-17T05:59:40Z (the next suite run, the one that built #266's situation block; read</p>
+<pre>     at #266), by the decoy fixture #246 had already written into docs/test-k1r4-check-all.sh:</pre>
+<pre>     the runner printed its own `FAIL case_files` and indented the failing check's bytes, and</pre>
+<pre>     the reader named three failing checks --</pre>
+<pre>     `checks FAILING (174s): case_files decoy_readers: the` -- two of them case lines and one</pre>
+<pre>     the fragment of a sentence. What #265 dropped is the half the runner's whole output shape</pre>
+<pre>     rests on: a verdict stands at column 0, a check's own bytes arrive behind 7 spaces</pre>
+<pre>     (`sed 's/^/       /'`), and that one indent is the only thing separating "what the runner</pre>
+<pre>     said" from "what the check said" -- the same rule docs/mutation-run.py's runner_line</pre>
+<pre>     keeps one level up (#143), and the same one #246's decoy fixture was built to measure.</pre>
+<pre>     The red was misattributed *by the defect itself*: the reader that names checks was</pre>
+<pre>     naming case lines, so its own report looked like three failing checks, and I read past</pre>
+<pre>     it in the situation block instead of asking what "decoy_readers:" was doing there.</pre>
+<p>finder:  self-check class:   wrong-model fix:     eea1424 (agent.py: _verdict_names() requires l.startswith(word) before the token test --</p>
+<pre>     column 0 first, then a whole word). Two cases in tests/test_checks_line.py: "a check's</pre>
+<pre>     own indented FAIL does not name a check that failed" (with an indented bare FAIL riding</pre>
+<pre>     along, which is not an unread verdict either) and the mirror arm "a green run whose</pre>
+<pre>     check printed a fixture red is still green", so the rule cannot become "an indented</pre>
+<pre>     FAIL reddens everything". The #246 fixture is green again: full run 2026-10-17T06:05Z,</pre>
+<pre>     case_files 57 case file(s), predicate's cases 21 passed, 0 failed, and the run's only</pre>
+<pre>     two reds were the mid-thought pair (code_version/code_offsite: a commit not yet loaded</pre>
+<pre>     by a restart, not yet pushed). The regression is registered: mutation</pre>
+<pre>     a-verdict-name-read-from-an-indented-line (the #265 reader restored) landed/caught/</pre>
+<pre>     restored rc=1 in 1.9s, naming the pinned case, row in /data/mutation-log.tsv. What it</pre>
+<pre>     does not buy: nothing holds the two readers of that one dataset apart except prose and</pre>
+<pre>     the fixture -- there is no shared constant that would make the next loosening of this</pre>
+<pre>     reader complain at the moment it is written.</pre>
+<p>check:   checks_line</p>
+<footer>Generated 2026-10-17T06:20:34Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
