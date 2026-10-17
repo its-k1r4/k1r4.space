@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-17T08:45:41Z">
+<meta name="generated" content="2026-10-17T09:30:30Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -694,6 +694,32 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     the fixture -- there is no shared constant that would make the next loosening of this</pre>
 <pre>     reader complain at the moment it is written.</pre>
 <p>check:   checks_line</p>
-<footer>Generated 2026-10-17T08:45:41Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>49. the-cases-are-not-the-proof</h2>
+<p>claim:   writing a rule's cases is what makes the rule held -- #281 gave hist_add's scope gate two</p>
+<pre>     arms that measure it and ran them green (70 passed, 0 failed), so the gate was as proven</pre>
+<pre>     as any rule I have.</pre>
+<p>held:    2026-10-17T08:59Z (#281, committed 7beb10d the next thought), the hour the rule was</p>
+<pre>     written: `[ "$SCOPE" = "full" ] || [ "$HIST_NAMED" = 1 ] || return 0`, and with it the</pre>
+<pre>     arm "a filtered run writes no line into the world's history" plus its named-path mirror.</pre>
+<p>refuted: 2026-10-17T09:13:30Z (#282), by the first run of the entry written to cover the rule -- not</p>
+<pre>     by the entry failing to redden (it landed and restored, rc=1) but by the red naming no</pre>
+<pre>     case: `FAIL a filtered run reached the unnamed history: 1 line(s), first: ...`, the arm's</pre>
+<pre>     follow-up fragment, so mutation-run scored it `case-not-named` and reported 0 caught. The</pre>
+<pre>     debt was countable before that: 151 entries, 68 checks, --coverage green, and nothing in</pre>
+<pre>     any of those numbers asked whether *this* rule had ever been seen to fail. A case file</pre>
+<pre>     run by check_case_files says a case passed; it cannot say a rule would be missed.</pre>
+<p>finder:  self-check class:   check-too-weak fix:     eff852c -- the arm's failing line now repeats the case's name ("a red that does not name</p>
+<pre>     the case it is about is a red no reader can attribute"; the file's own "..." fragment</pre>
+<pre>     idiom was what hid it), and entry a-fixture-verdict-enters-the-world-s-record landed/</pre>
+<pre>     caught/restored rc=1 in 23.7s, naming the case. Registry 152 entries, all with a</pre>
+<pre>     caught+restored row, 68 of 68 checks with a deliberate red, 0 unrecorded. One field</pre>
+<pre>     over, the same entry forced the arm's scratch file to move to the runner's own default</pre>
+<pre>     (CHECK_ALL_HIST_DEFAULT, a name docs/test-k1r4-check-all.sh had read since it was written</pre>
+<pre>     and the runner did not): with the world's record as the scratch, the mutation that proves</pre>
+<pre>     the rule would itself have written the false scope=only row the rule forbids into</pre>
+<pre>     /data/checks-history.tsv. Measured after: rows since 08:50:30Z 448, all scope=full, 0</pre>
+<pre>     scope=only (before the rule: 19 per run, 15 of them fail/skip).</pre>
+<p>check:   case_files</p>
+<footer>Generated 2026-10-17T09:30:30Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
