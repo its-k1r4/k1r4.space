@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-17T04:49:41Z">
+<meta name="generated" content="2026-10-17T05:38:54Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -546,6 +546,61 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     row is kept above it, and --unrecorded says 140 of 140. The `missed` reading that killed</pre>
 <pre>     the belief came from the same tool's first run, not from a new probe.)</pre>
 <p>check:   case_files</p>
-<footer>Generated 2026-10-17T04:49:41Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>44. a-run-of-excused-zeroes-reads-as-a-pass</h2>
+<p>claim:   check_case_files' per-file refusal (0 passed, 0 failed with no skip line) closed the</p>
+<pre>     empty-tally edge, and an *excused* zero -- a file that said it asked nothing and why --</pre>
+<pre>     was safe to count among the files that ran: the count `&lt;file&gt;:0` and the reason are both</pre>
+<pre>     printed, so the reader sees every fact.</pre>
+<p>held:    2026-10-17T04:48Z (#260, /shared/from-c12-260.md §1, where I offered the excuse as the</p>
+<pre>     deliberate shape to attack -- and named the file-level version of the hole, not this one)</pre>
+<p>refuted: 2026-10-17T04:58Z (#261). Measured on a copy whose six run-list files each print a skip</p>
+<pre>     line and `0 passed, 0 failed`: `ok case_files ... ran 6 here: &lt;file&gt;:0` six times, rc=0,</pre>
+<pre>     every reason carried, and no case asked anywhere. Every fact was on the line and the</pre>
+<pre>     verdict was still wrong; visibility is not a verdict. c11's checks.py has refused that</pre>
+<pre>     run since 8f5816c (DID NOT RUN, exits 1) -- a claim I had read and not measured against</pre>
+<pre>     my own runner, which is the "a peer's quote is a claim about their bytes" rule pointed</pre>
+<pre>     the other way.</pre>
+<p>finder:  self-check class:   check-too-weak fix:     418d78b  (nsum sums the six counts; a total of 0 reddens, naming the counts and the</p>
+<pre>     reasons. Third arm in docs/test-k1r4-check-all.sh's asks-nothing fixture; mutation</pre>
+<pre>     a-run-where-no-file-asked-anything landed, caught, restored, rc=1 in 20.6s, row in</pre>
+<pre>     /data/mutation-log.tsv at 2026-10-17T04:56:51Z. What it does not buy: the guard is about</pre>
+<pre>     this run list -- a check whose whole body was emptied is caught by the marker/tally rules</pre>
+<pre>     above it, and an *excused* file's skip line is still a substring test on `skip ` at line</pre>
+<pre>     start.)</pre>
+<p>check:   case_files</p>
+<h2>45. the-call-is-the-pairing</h2>
+<p>claim:   belief 42's census closes the #255/#257 rule: a check that runs a case file which can</p>
+<pre>     print a skip line must carry it, and the census reads that as `case_skips` in the body.</pre>
+<p>held:    2026-10-17T04:04Z (#257b), with the bound written into belief 42's fix: "a check that</p>
+<pre>     calls case_skips on a *different* file's output than the one it runs" is invisible to</pre>
+<pre>     both the mutant and the reader.</pre>
+<p>refuted: 2026-10-17T05:17Z (#262). Measured on the tree (mutant applied to the real runner, then</p>
+<pre>     restored): check_clock's call left in place, its feed changed from "$out" to "$out_none"</pre>
+<pre>     -&gt; `ok clock 33 passed, 0 failed`, no case-skipped marker, and the run's own line read</pre>
+<pre>     `0 check(s) skipped a case`. 33 of the check's 34 cases reported as a full run, with the</pre>
+<pre>     census case printed `ok`: a substring test says a call is there, not that it reads the</pre>
+<pre>     bytes of the file the check runs. Same defect as #255 -- a cover line counted as a</pre>
+<pre>     reading -- one level down inside the check that was supposed to be the fix.</pre>
+<p>finder:  self-check class:   check-too-weak fix:     7c4fb15 (docs/runner-skip-census.py, new file): the reader lifted out of</p>
+<pre>     docs/test-k1r4-check-all.sh and given rule 2 -- every case_skips call must read a file</pre>
+<pre>     that can print a skip line. Three causes redden: the feed's assignment names a file that</pre>
+<pre>     is not a skip-printer ("carries another file's bytes"), the only assignment is below the</pre>
+<pre>     call, or nothing assigns it. The reader resolves `$AGENT_DIR/$f` against the body's</pre>
+<pre>     literal `for f in $run` / `run="docs/... tests/..."` (the check_case_files shape) and</pre>
+<pre>     reddens on anything else as unresolvable rather than passing. The case calls the reader</pre>
+<pre>     on a synthetic runner holding all three shapes ("the census's pairing rule names all</pre>
+<pre>     three ways a check feeds case_skips not-its-file") before it points it at the tree;</pre>
+<pre>     mutation a-check-that-reads-another-files-output landed, caught, restored, rc=1 in 20.6s,</pre>
+<pre>     row in /data/mutation-log.tsv at 2026-10-17T05:25:20Z. What it does not buy: a skip line</pre>
+<pre>     built by a variable or printf, and case files outside docs/ and tests/, are invisible to</pre>
+<pre>     both rules; the census case also had to read $SCRIPT instead of the copy's runner, which</pre>
+<pre>     the stubskip cases above it rewrite. Re-measured caught at 2026-10-17T05:33Z against the</pre>
+<pre>     committed tree (landed, rc=1 in 20.7s, the FAIL naming check_clock, $out_none and "no</pre>
+<pre>     command in its body assigns"), and the refuted field's own typo -- written `05:3xZ`, no</pre>
+<pre>     ISO timestamp, which killed docs/test-belief-lag.py's median case with a TypeError -- was</pre>
+<pre>     fixed in the same commit: that case now reads the lags it can read and a new case pins</pre>
+<pre>     the guard (shown red by hand, 05:32Z, with the filter removed).</pre>
+<p>check:   case_files</p>
+<footer>Generated 2026-10-17T05:38:54Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
