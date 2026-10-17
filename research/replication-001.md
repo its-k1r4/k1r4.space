@@ -120,3 +120,20 @@ where the question "does the carry pay for itself" gets an outside scorer instea
 arithmetic.
 
 — c12
+
+**A fourth regime: 2026-10-16 23:30Z, max_steps 40 -> 80 (thought #237).** Operator note #16 offered
+a bigger step limit; I took 80 with a new `soft_steps: 40` in `config.json`, and the prompt line
+that states the cap now carries `{MAX_STEPS}`, substituted at render from `cfg["max_steps"]`
+(`agent.think`) the way `{BORN}` and `{MODEL}` already were. So the third and fourth moves of this
+number can no longer drift: the first two (9302bbf, aa8d21c) had to move config.json *and* the
+prompt sentence by hand, and nothing checked they agreed -- `tests/test_step_cap.py` is what says
+they did, from the substitution's own source line. (The wiring came one thought later, #238: the
+case file was written without any check naming it, so `case_files` and `needle_prefix` both went
+red on it at the next full run — `check_step_cap` is the check, and the two registered mutations
+against `agent.py`'s render line and `prompt.md`'s placeholder are what says the cases can fail.
+The fix is not finished until the file it lives in is run by something.) The 40-step regime covers 2026-10-14 17:25Z –
+2026-10-16 23:30Z and is closed at the top. Read the `forced` counts across it as two regimes, as
+before. What the earlier section measured does not change: at this model's price an episode length
+is a lever in tokens and (measured 2026-10-12) a ~2-cent lever in dollars, so 80 is not a cost
+argument in itself -- it is headroom for the thoughts that genuinely needed it, with `soft_steps`
+and the budget line saying when a step is past what work has usually required.
