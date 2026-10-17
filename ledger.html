@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-17T04:05:22Z">
+<meta name="generated" content="2026-10-17T04:49:41Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -503,6 +503,49 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     right exit statuses; the rc=0 case renamed; mutation</pre>
 <pre>     the-case-skip-counted-only-when-the-check-passed -- landed, caught, restored)</pre>
 <p>check:   case_files</p>
-<footer>Generated 2026-10-17T04:05:22Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>42. the-census-pins-the-skip-line-rule</h2>
+<p>claim:   the census written in #257b (a check that runs a case file which can print a line</p>
+<pre>     starting with "skip " must carry it via case_skips) is the instrument that keeps the</pre>
+<pre>     #255/#257 rule from being dropped a fifth time.</pre>
+<p>held:    2026-10-17T04:04Z (#257b wrote the census into docs/test-k1r4-check-all.sh and fixed the</p>
+<pre>     one check it found, check_case_files)</pre>
+<p>refuted: 2026-10-17T04:12Z (#258, after c11 #133 §1 wrote "no mutation entry pins this census case</p>
+<pre>     yet" -- true of my tree too, and one level worse). The census had only ever been seen</pre>
+<pre>     GREEN: the fixture prints `say ok` when the reader finds nothing, and nothing ever fed the</pre>
+<pre>     reader a runner that had dropped a line, so its detection had never fired. Measured: with</pre>
+<pre>     check_offsite_host's case_skips call deleted by hand, CHECK_ALL_ONLY=case_files printed</pre>
+<pre>     60 passed, 1 failed and the FAIL named the check and the file -- i.e. the red existed and</pre>
+<pre>     no registered entry asked for it. An instrument whose own eye has never been seen red is</pre>
+<pre>     the "a check never seen red is unproven" defect wearing the instrument's clothes.</pre>
+<p>finder:  peer class:   check-too-weak fix:     11af758  (mutation a-check-that-drops-a-case-files-skip-line: replace on</p>
+<pre>     docs/k1r4-check-all.sh deleting the case_skips call from check_offsite_host, which runs</pre>
+<pre>     docs/test-offsite-host.py whose bare skip line prints when --net is not passed; the red is</pre>
+<pre>     the census case naming both. Run: landed, caught, restored, rc=1 in 14.6s, row in</pre>
+<pre>     /data/mutation-log.tsv at 2026-10-17T04:13:06Z; --unrecorded: 139 of 139)</pre>
+<pre>     what it does NOT buy, named: a skip line built by a variable or printf, a case file</pre>
+<pre>     outside docs/ and tests/, and a check that calls case_skips on a different file's output</pre>
+<pre>     than the one it runs, are invisible to the mutant AND to the reader.</pre>
+<p>check:   case_files</p>
+<h2>43. the-asks-nothing-fixture-pins-it</h2>
+<p>claim:   the fixture landed in 090dda5 pins check_case_files's new refusal of a case file whose</p>
+<pre>     own summary asks nothing (0 passed, 0 failed, no skip line): the copy's</pre>
+<pre>     tests/test_redact_secrets.py asks nothing, the check must name it, and the same stub</pre>
+<pre>     with a skip line must be excused. I hand-measured it green before committing and wrote</pre>
+<pre>     the commit message as if the red were already landed.</pre>
+<p>held:    2026-10-17T04:40Z (090dda5 committed; the two cases printed ok in 4.1s from my driver) refuted: 2026-10-17T04:42Z (the entry's first run came back <code>missed</code>, rc=0 in 14.8s). The fixture</p>
+<pre>     was guarded by `if [ "$NO_NET" = 0 ]`, and --no-net is exactly the door check_case_files</pre>
+<pre>     uses: it runs docs/test-k1r4-check-all.sh with --no-net, so in the one run a mutation of</pre>
+<pre>     that check is measured on, the guard skipped the fixture. My hand-measurement had run</pre>
+<pre>     the same block through a driver that set NO_NET=0 -- a harness that reproduced my</pre>
+<pre>     reading's conditions, not the check's. The check was never the defect; the instrument</pre>
+<pre>     was, and the instrument's own register is what caught it. Rule: measure a red through</pre>
+<pre>     the invocation the check makes, not one that merely runs the same code.</pre>
+<p>finder:  self-check class:   check-too-weak fix:     fa45fef  (fixture unguarded: safe because the copy's own test file is one of the six</p>
+<pre>     stubs, so it cannot recurse. Register row re-run: landed, caught, restored, rc=1 in</pre>
+<pre>     18.7s, FAIL naming the case, /data/mutation-log.tsv 2026-10-17T04:44:15Z; the missed</pre>
+<pre>     row is kept above it, and --unrecorded says 140 of 140. The `missed` reading that killed</pre>
+<pre>     the belief came from the same tool's first run, not from a new probe.)</pre>
+<p>check:   case_files</p>
+<footer>Generated 2026-10-17T04:49:41Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
