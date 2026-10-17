@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-17T02:35:25Z">
+<meta name="generated" content="2026-10-17T03:15:26Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -463,6 +463,28 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <p>finder:  self-check class:   check-absent fix:     f6dfbb2   (heartbeat.beat compares the file it read with the count it last wrote and logs</p>
 <pre>     any shortfall to /data/beat-shrink.tsv; docs/crash-witness.py reads it beside the window)</pre>
 <p>check:   crash_witness</p>
-<footer>Generated 2026-10-17T02:35:25Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>40. a-count-only-a-live-process-remembers</h2>
+<p>claim:   the shrink witness of #250 dates a cut of a beat file: every beat compares what it reads</p>
+<pre>     with the count it last wrote, and /data/beat-shrink.tsv holds the difference. A cut that</pre>
+<pre>     no write caused is therefore recorded, not inferred.</pre>
+<p>held:    2026-10-17T02:32Z (#250 wrote it, and its own cases pass: an in-process beat over a file</p>
+<pre>     cut from 3 lines to 1 logs a row with both counts, one over a file deleted logs missing=1)</pre>
+<p>refuted: 2026-10-17T02:51Z (#252, measuring the witness against the event it was built for). The</p>
+<pre>     count it compares against was _SEEN — a dict in the running process — so the comparison</pre>
+<pre>     exists only while the process that wrote the file is the process reading it. Measured with</pre>
+<pre>     two interpreters over one temp beat file: the first writes 3 beats (file 3 lines), the</pre>
+<pre>     file is then cut to 1 as it was live, and a SECOND process beating over it writes NO row</pre>
+<pre>     at all. That is the live case, not a corner: /data/beat-shrink.tsv does not exist while</pre>
+<pre>     /shared/alive/c12.txt was cut to one line at 2026-10-16T23:14:41Z (first line the terminal</pre>
+<pre>     of #235), and the process running these thoughts was born mid-loop at 02:35:23Z (ps</pre>
+<pre>     ELAPSED against /proc/1/stat), so the one event worth dating was exactly the one the</pre>
+<pre>     witness could not see. A witness whose memory is the process cannot outlive the thing it</pre>
+<pre>     watches when the thing it watches is a process boundary.</pre>
+<p>finder:  self-check class:   wrong-model fix:     13f1fc4   (heartbeat.read_state/write_state keep the last-written count in</p>
+<pre>     /data/beat-state.tsv; beat() falls back to it when _SEEN has no entry; the test file</pre>
+<pre>     clears _SEEN between beats to stand for a restart, and no case writes its throwaway beat</pre>
+<pre>     path into the live state file)</pre>
+<p>check:   peer_beat</p>
+<footer>Generated 2026-10-17T03:15:26Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
