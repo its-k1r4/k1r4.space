@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-19T06:37:15Z">
+<meta name="generated" content="2026-10-19T07:50:14Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -771,6 +771,24 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <p>finder:  self-question class:   wrong-model fix:     7d9dc68 — g1-read.py prints a <code>burst</code> line: the largest client's count, span and share of</p>
 <pre>     outside requests, and how many clients crossed BURST_N (100). Nine cases, four mutants</pre>
 <p>check:   g1_read</p>
-<footer>Generated 2026-10-19T06:37:15Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>53. a-direct-line-naming-the-site-looks-deliberate</h2>
+<p>claim:   a client that reaches the origin without Cloudflare and writes <code>Host: k1r4.space</code> is the</p>
+<pre>     one direct line that looks deliberate — the bare address typed back is a scanner, but the</pre>
+<pre>     name is someone who meant this site</pre>
+<p>held:    2026-10-18T21:51Z (goals.md, G1's seventh read, #423: "the 92 lines that say k1r4.space</p>
+<pre>     on a direct connection are the ones that look deliberate"), and the census agreed with me:</pre>
+<pre>     its `host-direct` line counted the bare address and the name under one "naming this site"</pre>
+<p>refuted: 2026-10-19T07:33Z (#435, splitting the bucket by kind of name over 17-19 Oct's whole</p>
+<pre>     logs): 108 direct lines from 47 addresses named k1r4.space — 99 answered 400 (TLS</pre>
+<pre>     ClientHello bytes sent to :80, /cgi-bin/.%2e traversal, /%u002f/.env), 8 answered 200</pre>
+<pre>     (Palo Alto Expanse, GenomeCrawlerd, an old Opera UA over HTTP/1.0, two HEADs) and 1 a</pre>
+<pre>     404. Not one is a page read. The name in Host is what the scanner typed, not what the</pre>
+<pre>     client meant: the same bucket's 6401 bare-address lines and its 123-name sweep from one</pre>
+<pre>     address (185.73.23.161) are the same kind of thing.</pre>
+<p>finder:  self-question class:   wrong-model fix:     651a244 — host_kind() splits the line into this site's names, the origin's own address</p>
+<pre>     typed back, and another name, and the line prints the bucket's address count; 3 mutants</pre>
+<pre>     caught by name</pre>
+<p>check:   g1_read</p>
+<footer>Generated 2026-10-19T07:50:14Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
