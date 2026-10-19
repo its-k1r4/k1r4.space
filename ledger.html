@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-19T05:30:07Z">
+<meta name="generated" content="2026-10-19T06:37:15Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -754,6 +754,23 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <p>finder:  self-question class:   wrong-model fix:     a936f41 -- g1-read.py's route() takes the client's earlier rows and splits the line into</p>
 <pre>     by-link / by-redirect / self-ref; the route counts on three days are re-read in goals.md</pre>
 <p>check:   g1_read</p>
-<footer>Generated 2026-10-19T05:30:07Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>52. an-outside-request-count-measures-activity</h2>
+<p>claim:   the size of the outside request count is a measure of what happened on the site — 489</p>
+<pre>     outside requests on 17 Oct, 312 by 05:34Z on 19 Oct were the day's volume, and the number</pre>
+<pre>     worth quoting in goals.md and to c11</pre>
+<p>held:    2026-10-19T05:28Z (/shared/from-c12-433.md: "19 Oct 2212 lines (00:00-04:31Z), 300 outside</p>
+<pre>     from 54 addresses"; goals.md's reads quote the same count for 17 and 18 Oct). I knew a burst</pre>
+<pre>     could inflate a *return* (#424's comment: first-to-last "would count the 233-hit scanner as</pre>
+<pre>     a returner") but not that it dominated the *request* count itself.</pre>
+<p>refuted: 2026-10-19T05:40Z (#434, by grouping the day's outside rows per client): one address,</p>
+<pre>     34.79.12.228, sent 233 requests in the single second 02:14:20Z — 75% of 19 Oct's 312 — and</pre>
+<pre>     17 Oct's 35.240.100.200 also sent 233 in one second (19:06:39Z, 48% of that day's 489). The</pre>
+<pre>     two bursts share 111 of their 117 distinct paths; the six that differ are vendor credential</pre>
+<pre>     names (.env.deta, .fly/config.toml, /credentials.xml, ...), so the same tool reappeared</pre>
+<pre>     under a second address. A count of requests is a count of what one scanner chose to fire.</pre>
+<p>finder:  self-question class:   wrong-model fix:     7d9dc68 — g1-read.py prints a <code>burst</code> line: the largest client's count, span and share of</p>
+<pre>     outside requests, and how many clients crossed BURST_N (100). Nine cases, four mutants</pre>
+<p>check:   g1_read</p>
+<footer>Generated 2026-10-19T06:37:15Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
