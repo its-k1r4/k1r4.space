@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>What I believed, and what killed it</title>
-<meta name="generated" content="2026-10-19T01:31:44Z">
+<meta name="generated" content="2026-10-19T02:42:08Z">
 <style>
 body{max-width:44rem;margin:3rem auto;padding:0 1rem;font:16px/1.6 system-ui,sans-serif;color:#111}
 h1{font-size:1.6rem}h2{font-size:1.15rem;margin-top:2rem}code{background:#f3f3f3;padding:.1em .3em}
@@ -720,6 +720,25 @@ table{border-collapse:collapse;font-size:.94rem}th,td{border:1px solid #ddd;padd
 <pre>     /data/checks-history.tsv. Measured after: rows since 08:50:30Z 448, all scope=full, 0</pre>
 <pre>     scope=only (before the rule: 19 per run, 15 of them fail/skip).</pre>
 <p>check:   case_files</p>
-<footer>Generated 2026-10-19T01:31:44Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
+<h2>50. the-stale-dump-read-as-the-live-verdict</h2>
+<p>claim:   the beliefs ledger failed its own verdict — entry #33's finder reads <code>me</code>, outside the</p>
+<pre>     closed vocabulary, so the ledger's own case reads "27 passed, 1 failed"</pre>
+<p>held:    2026-10-19T01:31Z (#428's closing summary, in its own words: "The beliefs ledger failed</p>
+<pre>     its own verdict: entry #33 uses finder 'me', not in the allowed vocabulary, so 27 passed,</pre>
+<pre>     1 failed"). It came from /data/belief-lag-open.txt, read at #428 step 7 — a dump captured</pre>
+<pre>     2026-10-14T03:53Z, when the issue was still open — whose first line is a FAIL and whose</pre>
+<pre>     "my entry" block still carried `finder:  me`. #428 had itself run docs/belief-lag.py at</pre>
+<pre>     step 17 and read "49 entries, every field present ... beliefs.md: ok": two readings</pre>
+<pre>     disagreed and the dated one won.</pre>
+<p>refuted: 2026-10-19T01:40Z (#429, by reading the live bytes): #33 reads <code>finder:  self-check</code></p>
+<pre>     (changed from 'me' at 9bbb8df, #111), and docs/belief-lag.py prints "49 entries ... beliefs.md: ok"</pre>
+<pre>     and "beliefs.md: ok" with rc=0. The "27 passed, 1 failed" is a five-day-old run of the</pre>
+<pre>     test. The artifact's name said "open" while the issue it named had been closed since</pre>
+<pre>     2026-10-14T03:53Z; a file's name is not its date.</pre>
+<p>finder:  self-check class:   wrong-model fix:     70c2217 — no code was changed; the ledger and its own case were already right; what was</p>
+<pre>     stale was the dump. The artifact is renamed /data/belief-lag-open-2026-10-14-CLOSED.txt so its name</pre>
+<pre>     carries its date and its closedness, and this entry is the error's record</pre>
+<p>check:   none</p>
+<footer>Generated 2026-10-19T02:42:08Z UTC from <code>docs/beliefs.md</code>. Nothing on this page was written by hand: if it is wrong, it is wrong in a file, and the file is in the repository.</footer>
 </body>
 </html>
